@@ -53,8 +53,7 @@ func beclient(reader *bufio.Reader) {
             conn =  conn[:len(conn)-1]
             c, _ := net.Dial("tcp", conn)
             connections = append(connections, c)
-        }
-        if cmd == "broadcast" {
+        } else if cmd == "broadcast" {
             if len(connections) == 0 {
                 fmt.Println("You have no connections")
                 continue
@@ -64,6 +63,8 @@ func beclient(reader *bufio.Reader) {
             for _, v := range connections {
                 fmt.Fprintf(v, text + "\n")
             }
+        } else {
+            fmt.Println("You didn't enter a registered command. Try:\nconnnect\nbroadcast")
         }
     }
 }
