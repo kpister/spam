@@ -6,7 +6,7 @@ install go: https://golang.com/dl
 
 `cd ~/go/src`
 
-`go get -d github.com/kpister/spam-core.git`
+`go get -d github.com/kpister/spam-core`
 
 `go run server.go`
 
