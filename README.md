@@ -8,7 +8,7 @@ install go: https://golang.com/dl
 
 `go get -d github.com/kpister/spam-core.git`
 
-go run server.go
+`go run server.go`
 
 (new tab) `go run client.go`
 
