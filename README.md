@@ -2,7 +2,7 @@
 
 install go: https://golang.org/dl
 
-`mkdir -p ~/go/src && cd $_` OR `mkdir -p some/dir/here/ && cd $_ && export GOPATH=$_`
+`mkdir -p ~/go/src && cd $_` OR `mkdir -p some/dir/here/src && cd $_ && export GOPATH=$(some/dir/here)`
 
 `go get -d github.com/kpister/spam-core`
 

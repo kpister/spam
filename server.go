@@ -9,7 +9,7 @@ import (
     "bufio"
 )
 
-func handler(c net.Conn, ch chan string) {
+func mhandler(c net.Conn, ch chan string) {
     ch <- c.RemoteAddr().String()
     for {
         message, _ := bufio.NewReader(c).ReadString('\n')
@@ -25,13 +25,13 @@ func handler(c net.Conn, ch chan string) {
     c.Close()
 }
 
-func logger(ch chan string) {
+func mlogger(ch chan string) {
     for {
         fmt.Println(<-ch)
     }
 }
 
-func server(l net.Listener, ch chan string) {
+func mserver(l net.Listener, ch chan string) {
     for {
         c, err := l.Accept()
         if err != nil {
@@ -41,7 +41,7 @@ func server(l net.Listener, ch chan string) {
     }
 }
 
-func main() {
+func Server() {
     l, err := net.Listen("tcp", ":8080")
     if err != nil {
         panic(err)
