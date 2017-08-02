@@ -1,10 +1,12 @@
 # spam-core
 
-install go: https://golang.com/dl
+install go: https://golang.org/dl
 
 `mkdir ~/go/src`
 
 `cd ~/go/src`
+
+OR `$ export GOPATH=$(go env GOPATH)`
 
 `go get -d github.com/kpister/spam-core`
 
