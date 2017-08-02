@@ -6,7 +6,7 @@ mkdir ~/go/src
 
 cd ~/go/src
 
-go get -d https://github.com/kpister/spam-core.git
+go get -d github.com/kpister/spam-core.git
 
 go run server.go
 
