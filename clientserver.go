@@ -1,6 +1,7 @@
 package main
 
 // Source: http://divan.github.io/posts/go_concurrency_visualize/
+// Other source: https://systembash.com/a-simple-go-tcp-server-and-tcp-client/
 
 import (
     "fmt"
