@@ -8,11 +8,15 @@ install go: https://golang.org/dl
 
 `cd github.com/kpister/spam-core`
 
-`go run clientserver.go`
+`go build` will create an executable spam-core 
 
-(new tab) `go run clientserver.go`
+OR export your GOPATH/bin to your path variable `export $PATH=$PATH:$GODIR/bin` and then run `go install`. You can now run spam-core from anywhere
 
-(new tab) `go run clientserver.go`
+`spam-core`
+
+(new tab) `spam-core`
+
+(new tab) `spam-core`
 
 
 for each instance:
