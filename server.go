@@ -13,6 +13,9 @@ func handler(c net.Conn, ch chan string) {
     ch <- c.RemoteAddr().String()
     for {
         message, _ := bufio.NewReader(c).ReadString('\n')
+        if message == "" {
+            break
+        }
         // output message received
         fmt.Print("Message Received:", string(message))
         // send new string back to client
