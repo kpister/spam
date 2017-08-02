@@ -10,7 +10,7 @@ install go: https://golang.org/dl
 
 `go build` will create an executable spam-core 
 
-OR export your GOPATH/bin to your path variable `export $PATH=$PATH:$GOPATH/bin` and then run `go install`. You can now run spam-core from anywhere
+OR `export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam-core from anywhere
 
 `spam-core`
 

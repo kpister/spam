@@ -65,7 +65,7 @@ func beclient(reader *bufio.Reader) {
                 fmt.Fprintf(v, text + "\n")
             }
         } else {
-            fmt.Println("You didn't enter a registered command. Try:\nconnnect\nbroadcast")
+            fmt.Println("You didn't enter a registered command. Try:\nconnect\nbroadcast")
         }
     }
 }
