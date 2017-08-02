@@ -10,6 +10,8 @@ OR `$ export GOPATH=$(go env GOPATH)`
 
 `go get -d github.com/kpister/spam-core`
 
+`cd github.com/kpister/spam-core`
+
 `go run server.go`
 
 (new tab) `go run client.go`
