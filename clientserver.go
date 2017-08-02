@@ -48,7 +48,7 @@ func beclient(reader *bufio.Reader) {
         cmd, _ := reader.ReadString('\n')
         cmd = cmd[:len(cmd)-1]
         if cmd == "connect" {
-            fmt.Print("Enter address: ")
+            fmt.Print("Enter address (eg: 127.0.0.1:8080): ")
             conn, _ := reader.ReadString('\n')
             conn =  conn[:len(conn)-1]
             c, _ := net.Dial("tcp", conn)
