@@ -2,7 +2,7 @@
 
 install go: https://golang.org/dl
 
-`mkdir ~/go/src`
+`mkdir -p ~/go/src`
 
 `cd ~/go/src`
 
