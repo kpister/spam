@@ -52,8 +52,12 @@ func beclient(reader *bufio.Reader) {
             fmt.Print("Enter address (eg: 127.0.0.1:8080): ")
             conn, _ := reader.ReadString('\n')
             conn =  conn[:len(conn)-1]
-            c, _ := net.Dial("tcp", conn)
-            connections = append(connections, c)
+            c, err := net.Dial("tcp", conn)
+            if err != nil {
+                fmt.Println("That peer does not exist")
+            } else {
+                connections = append(connections, c)
+            }
         } else if cmd == "broadcast" {
             if len(connections) == 0 {
                 fmt.Println("You have no connections")
@@ -64,8 +68,39 @@ func beclient(reader *bufio.Reader) {
             for _, v := range connections {
                 fmt.Fprintf(v, text + "\n")
             }
+        } else if cmd == "exit" {
+            return
+        } else if cmd == "list" {
+            for _, v := range connections {
+                fmt.Println(v.RemoteAddr())
+            }
+        } else if cmd == "remove" {
+            if len(connections) == 0 {
+                fmt.Println("Your peers list is empty. You cannot remove anyone")
+                continue
+            } else if len(connections) == 1 {
+                fmt.Println("You only have one peer: "+ connections[0].RemoteAddr().String() + ". They have now been removed")
+                connections = connections[:0]
+            } else {
+                fmt.Print("Enter the address of the peer you want to remove: ")
+                p, _ := reader.ReadString('\n')
+                p = p[0:len(p)-1]
+                found := false
+                for i, v := range connections {
+                    if v.RemoteAddr().String() == p {
+                        if i + 1 < len(connections) {
+                            connections[i] = connections[len(connections) - 1]
+                        }
+                        connections = connections[0:len(connections) -1]
+                        found = true
+                    }
+                }
+                if !found {
+                    fmt.Println("That peer does not exist in your peer list. Please use the list command to see your peers")
+                }
+            }
         } else {
-            fmt.Println("You didn't enter a registered command. Try:\nconnect\nbroadcast")
+            fmt.Println("You didn't enter a registered command. Try:\nconnect\nbroadcast\nlist\nexit")
         }
     }
 }
@@ -80,7 +115,5 @@ func main() {
     ch := make(chan string)
     go logger(ch)
     go server(l, ch)
-    for {
-        beclient(reader)
-    }
+    beclient(reader)
 }
