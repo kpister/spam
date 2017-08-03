@@ -8,6 +8,8 @@ import (
     "net"
     "bufio"
     "os"
+
+    "github.com/kpister/spam/parsecfg"
 )
 
 func handler(c net.Conn, ch chan string) {
@@ -104,7 +106,7 @@ func beclient(reader *bufio.Reader) {
         }
     }
 }
-func StartServer() {
+func StartServer(cfg *parsecfg.Cfg) {
     reader := bufio.NewReader(os.Stdin)
     fmt.Print("Enter port: ")
     port, _ := reader.ReadString('\n')
