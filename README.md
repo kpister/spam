@@ -30,6 +30,3 @@ enter the address of the other clientservers (`127.0.0.1:8080`, `127.0.0.1:8081`
 use the command `broadcast` to send a message to all of your peers (you will be prompted for a message)
 
 enter your message and see it in the other nodes!
-
-
-# KEEP IN MIND THIS IS FRAGILE AND PRONE TO SEGFAULTS IF YOU FUCK IT UP
