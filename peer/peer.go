@@ -3,6 +3,7 @@ package peer
 
 import (
     "net"
+    "fmt"
     "github.com/kpister/spam/e"
 )
 
@@ -16,6 +17,7 @@ func MakePeer(addr, name string) *Peer {
     stop := e.Rr(or, false)
 
     if !stop {
+        fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
         return &Peer{conn, name}
     }
 

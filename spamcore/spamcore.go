@@ -7,46 +7,47 @@ import (
     "fmt"
     "net"
     "bufio"
-    "os"
+    "time"
     "strconv"
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/parsecfg"
-    "github.com/kpister/spam/peer"
+//    "github.com/kpister/spam/peer"
 )
 
-func handler(c net.Conn, ch chan string) {
-    ch <- c.RemoteAddr().String()
-    for {
-        message, _ := bufio.NewReader(c).ReadString('\n')
-        if message == "" {
-            break
-        }
-        // output message received
-        fmt.Print("Message Received:", string(message))
-        // send new string back to client
-        c.Write([]byte(message + "\n"))
+func handler(conn net.Conn, ch chan string) {
+    reader := bufio.NewReader(conn)
+    remoteAddr := conn.RemoteAddr().String()
 
+    for {
+        message, or := reader.ReadString('\n')
+        if or != nil && or.Error() == "EOF" {
+            ch <- "Disconnected from " + remoteAddr + "\n"
+            break
+        } else if !e.Rr(or, true) {
+            // output message received
+            ch <- "Message Received from " + remoteAddr +":" + string(message)
+        }
     }
-    c.Close()
+    conn.Close()
 }
 
 func logger(ch chan string) {
     for {
-        fmt.Println(<-ch)
+        fmt.Print(<-ch)
     }
 }
 
-func server(l net.Listener, ch chan string) {
+func server(listener net.Listener, ch chan string) {
     for {
-        c, err := l.Accept()
-        if err != nil {
+        c, or := listener.Accept()
+        if e.Rr(or, false) {
             continue
         }
         go handler(c, ch)
     }
 }
-
+/*
 func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
     for {
         fmt.Print("Enter command: ")
@@ -109,25 +110,25 @@ func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
         }
     }
 }
-func StartServer(cfg *parsecfg.Cfg) {
-    var listener net.Listener
-    var reader *bufio.Reader
-    for cfg.Port == 0 {
-        reader = bufio.NewReader(os.Stdin)
-        fmt.Print("Enter port: ")
-        port, or := reader.ReadString('\n')
-        e.Rr(or, false)
-        cfg.Port, or = strconv.Atoi(port)
-        e.Rr(or, false)
+*/
 
-        listener, or = net.Listen("tcp", ":" + string(cfg.Port))
-        if e.Rr(or, false) {
-            cfg.Port = 0
+func send(cfg *parsecfg.Cfg) {
+    for {
+        if len(cfg.Peers) > 0 {
+            for _, v := range cfg.Peers {
+                fmt.Fprintf(v.Conn, time.Now().String() + "\n")
+            }
         }
+        time.Sleep(5000 * time.Millisecond)
     }
+}
+func StartServer(cfg *parsecfg.Cfg) {
+    listener, or := net.Listen("tcp", ":" + strconv.Itoa(cfg.Port))
+    e.Rr(or, true)
 
     ch := make(chan string)
     go logger(ch)
     go server(listener, ch)
-    beclient(reader, cfg)
+    go send(cfg)
+    for {}
 }
