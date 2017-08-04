@@ -3,18 +3,13 @@ package parsecfg
 
 import (
     "io/ioutil"
-    "net"
     "strings"
     "github.com/kpister/spam/e"
+    "github.com/kpister/spam/peer"
 )
 
-type Peer struct {
-    Conn net.Conn
-    Name string
-}
-
 type Cfg struct {
-    Peers []Peer
+    Peers []peer.Peer
 }
 
 func ParseCfg(filename string) Cfg {
@@ -30,17 +25,19 @@ func ParseCfg(filename string) Cfg {
     for _, v := range pieces {
         if v == "peers" {
             readpeers = true
+        } else if v == "end" {
+            readpeers = false
         } else if readpeers {
             ppieces := strings.Split(v, " ")
             pname := ""
-            pconn, or := net.Dial("tcp", ppieces[0])
             e.Rr(or, false)
             if len(ppieces) > 1 {
                 pname = ppieces[1]
             }
-            cfg.Peers = append(cfg.Peers, Peer{pconn, pname})
-        } else if v == "end" {
-            readpeers = false
+            mpeer := peer.MakePeer(ppieces[0], pname)
+            if mpeer != nil {
+                cfg.Peers = append(cfg.Peers, *mpeer)
+            }
         }
 
     }

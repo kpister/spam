@@ -10,6 +10,7 @@ import (
     "os"
 
     "github.com/kpister/spam/parsecfg"
+    "github.com/kpister/spam/peer"
 )
 
 func handler(c net.Conn, ch chan string) {
@@ -53,11 +54,11 @@ func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
             fmt.Print("Enter address (eg: 127.0.0.1:8080): ")
             conn, _ := reader.ReadString('\n')
             conn =  conn[:len(conn)-1]
-            c, err := net.Dial("tcp", conn)
-            if err != nil {
-                fmt.Println("That peer does not exist")
+            mpeer := peer.MakePeer(conn, "")
+            if mpeer != nil {
+                cfg.Peers = append(cfg.Peers, *mpeer)
             } else {
-                cfg.Peers = append(cfg.Peers, parsecfg.Peer{c, ""})
+                fmt.Println("Could not connect to that peer")
             }
         } else if cmd == "broadcast" {
             if len(cfg.Peers) == 0 {
