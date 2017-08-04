@@ -4,12 +4,15 @@ package parsecfg
 import (
     "io/ioutil"
     "strings"
+    "strconv"
+
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/peer"
 )
 
 type Cfg struct {
     Peers []peer.Peer
+    Port int
 }
 
 func ParseCfg(filename string) Cfg {
@@ -38,6 +41,8 @@ func ParseCfg(filename string) Cfg {
             if mpeer != nil {
                 cfg.Peers = append(cfg.Peers, *mpeer)
             }
+        } else if strings.Contains(v, "port") {
+            cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
         }
 
     }

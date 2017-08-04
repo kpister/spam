@@ -8,7 +8,9 @@ import (
     "net"
     "bufio"
     "os"
+    "strconv"
 
+    "github.com/kpister/spam/e"
     "github.com/kpister/spam/parsecfg"
     "github.com/kpister/spam/peer"
 )
@@ -108,15 +110,24 @@ func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
     }
 }
 func StartServer(cfg *parsecfg.Cfg) {
-    reader := bufio.NewReader(os.Stdin)
-    fmt.Print("Enter port: ")
-    port, _ := reader.ReadString('\n')
-    l, err := net.Listen("tcp", ":" + port[0: len(port)-1])
-    if err != nil {
-        panic(err)
+    var listener net.Listener
+    var reader *bufio.Reader
+    for cfg.Port == 0 {
+        reader = bufio.NewReader(os.Stdin)
+        fmt.Print("Enter port: ")
+        port, or := reader.ReadString('\n')
+        e.Rr(or, false)
+        cfg.Port, or = strconv.Atoi(port)
+        e.Rr(or, false)
+
+        listener, or = net.Listen("tcp", ":" + string(cfg.Port))
+        if e.Rr(or, false) {
+            cfg.Port = 0
+        }
     }
+
     ch := make(chan string)
     go logger(ch)
-    go server(l, ch)
+    go server(listener, ch)
     beclient(reader, cfg)
 }
