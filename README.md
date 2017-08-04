@@ -4,19 +4,21 @@ install go: https://golang.org/dl
 
 `mkdir -p ~/go/src && cd $_` OR `mkdir -p some/dir/here/src && cd $_ && export GOPATH=$(some/dir/here)`
 
-`go get -d github.com/kpister/spam-core`
+`go get -d github.com/kpister/spam`
 
-`cd github.com/kpister/spam-core`
+`cd github.com/kpister/spam`
 
-`go build` will create an executable spam-core 
+`go build` will create an executable spam 
 
 OR `export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam-core from anywhere
 
-`spam-core`
+edit spam_core.cfg with the IPs of your peers. These will be the ones spam-core connects to by default
 
-(new tab) `spam-core`
+`spam`
 
-(new tab) `spam-core`
+(new tab) `spam`
+
+(new tab) `spam`
 
 
 for each instance:
