@@ -44,8 +44,7 @@ func server(l net.Listener, ch chan string) {
     }
 }
 
-func beclient(reader *bufio.Reader) {
-    var connections []net.Conn
+func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
     for {
         fmt.Print("Enter command: ")
         cmd, _ := reader.ReadString('\n')
@@ -58,42 +57,43 @@ func beclient(reader *bufio.Reader) {
             if err != nil {
                 fmt.Println("That peer does not exist")
             } else {
-                connections = append(connections, c)
+                cfg.Peers = append(cfg.Peers, parsecfg.Peer{c, ""})
             }
         } else if cmd == "broadcast" {
-            if len(connections) == 0 {
+            if len(cfg.Peers) == 0 {
                 fmt.Println("You have no connections")
                 continue
             }
             fmt.Print("Enter message: ")
             text, _ := reader.ReadString('\n')
-            for _, v := range connections {
-                fmt.Fprintf(v, text + "\n")
+            for _, v := range cfg.Peers {
+                fmt.Fprintf(v.Conn, text + "\n")
             }
         } else if cmd == "exit" {
             return
         } else if cmd == "list" {
-            for _, v := range connections {
-                fmt.Println(v.RemoteAddr())
+            for _, v := range cfg.Peers {
+                fmt.Print(v.Conn.RemoteAddr())
+                fmt.Println(v.Name)
             }
         } else if cmd == "remove" {
-            if len(connections) == 0 {
+            if len(cfg.Peers) == 0 {
                 fmt.Println("Your peers list is empty. You cannot remove anyone")
                 continue
-            } else if len(connections) == 1 {
-                fmt.Println("You only have one peer: "+ connections[0].RemoteAddr().String() + ". They have now been removed")
-                connections = connections[:0]
+            } else if len(cfg.Peers) == 1 {
+                fmt.Println("You only have one peer: "+ cfg.Peers[0].Conn.RemoteAddr().String() + ". They have now been removed")
+                cfg.Peers = cfg.Peers[:0]
             } else {
                 fmt.Print("Enter the address of the peer you want to remove: ")
                 p, _ := reader.ReadString('\n')
                 p = p[0:len(p)-1]
                 found := false
-                for i, v := range connections {
-                    if v.RemoteAddr().String() == p {
-                        if i + 1 < len(connections) {
-                            connections[i] = connections[len(connections) - 1]
+                for i, v := range cfg.Peers {
+                    if v.Conn.RemoteAddr().String() == p {
+                        if i + 1 < len(cfg.Peers) {
+                            cfg.Peers[i] = cfg.Peers[len(cfg.Peers) - 1]
                         }
-                        connections = connections[0:len(connections) -1]
+                        cfg.Peers = cfg.Peers[0:len(cfg.Peers) -1]
                         found = true
                     }
                 }
@@ -117,5 +117,5 @@ func StartServer(cfg *parsecfg.Cfg) {
     ch := make(chan string)
     go logger(ch)
     go server(l, ch)
-    beclient(reader)
+    beclient(reader, cfg)
 }
