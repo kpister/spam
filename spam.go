@@ -1,9 +1,9 @@
 package main
 
 import (
-//    "os"
+    "os"
 //    "os/signal"
-//    "fmt"
+    "fmt"
     "github.com/kpister/spam/spamcore"
     "github.com/kpister/spam/parsecfg"
 )
@@ -22,8 +22,22 @@ func main(){
     signal.Notify(exitchannel, os.Interrupt)
     go handleexit(exitchannel)
     */
+    configfile := "spam_core.cfg"
 
-    cfg := parsecfg.ParseCfg("spam_core.cfg")
+    // Search for command flags
+    for i, v := range os.Args {
+        // -i to set config file
+        if v == "-i" {
+            if len(os.Args) > i {
+                configfile = os.Args[i + 1]
+            } else {
+                fmt.Println("You failed to run this.")
+                os.Exit(0)
+            }
+        }
+    }
+
+    cfg := parsecfg.ParseCfg(configfile)
 
     spamcore.StartServer(&cfg)
 }
