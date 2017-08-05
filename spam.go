@@ -39,5 +39,5 @@ func main(){
 
     cfg := parsecfg.ParseCfg(configfile)
 
-    spamcore.StartServer(&cfg)
+    spamcore.StartServer(cfg)
 }

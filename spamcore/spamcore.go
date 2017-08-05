@@ -12,7 +12,7 @@ import (
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/parsecfg"
-//    "github.com/kpister/spam/peer"
+    "github.com/kpister/spam/peer"
 )
 
 func handler(conn net.Conn, ch chan string) {
@@ -115,8 +115,12 @@ func beclient(reader *bufio.Reader, cfg *parsecfg.Cfg) {
 func send(cfg *parsecfg.Cfg) {
     for {
         if len(cfg.Peers) > 0 {
-            for _, v := range cfg.Peers {
-                fmt.Fprintf(v.Conn, time.Now().String() + "\n")
+            for i, v := range cfg.Peers {
+                if v.Status == "connected" {
+                    fmt.Fprintf(v.Conn, time.Now().String() + "\n")
+                } else if v.Status == "offline" {
+                    peer.Connect(&cfg.Peers[i])
+                }
             }
         }
         time.Sleep(5000 * time.Millisecond)

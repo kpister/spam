@@ -10,6 +10,8 @@ import (
 type Peer struct {
     Conn net.Conn
     Name string
+    Status string
+    Addr string
 }
 
 func MakePeer(addr, name string) *Peer {
@@ -18,8 +20,18 @@ func MakePeer(addr, name string) *Peer {
 
     if !stop {
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
-        return &Peer{conn, name}
+        return &Peer{conn, name, "connected", addr}
     }
 
-    return nil
+    return &Peer{conn, name, "offline", addr}
+}
+
+func Connect(peer *Peer) {
+    conn, or := net.Dial("tcp", peer.Addr)
+
+    if !e.Rr(or, false) {
+        fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
+        peer.Status = "connected"
+        peer.Conn = conn
+    }
 }

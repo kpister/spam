@@ -15,7 +15,7 @@ type Cfg struct {
     Port int
 }
 
-func ParseCfg(filename string) Cfg {
+func ParseCfg(filename string) *Cfg {
     cfg := Cfg{}
 
     bytecontents, or := ioutil.ReadFile(filename)
@@ -38,14 +38,12 @@ func ParseCfg(filename string) Cfg {
                 pname = ppieces[1]
             }
             mpeer := peer.MakePeer(ppieces[0], pname)
-            if mpeer != nil {
-                cfg.Peers = append(cfg.Peers, *mpeer)
-            }
+            cfg.Peers = append(cfg.Peers, *mpeer)
         } else if strings.Contains(v, "port") {
             cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
         }
 
     }
-    return cfg
+    return &cfg
 }
 
