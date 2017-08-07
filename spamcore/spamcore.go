@@ -151,10 +151,11 @@ func handleconsole(log *os.File, cfg *parsecfg.Cfg) {
 
         log.Seek(0,0)
         // handle commands
-        if pieces[1] == "peers" {
+        if pieces[1] == "peers\n" {
             for _, v := range cfg.Peers {
-                readwrite.WriteString(v.Addr + " " + v.Name + " " + v.Status + "\n")
+                readwrite.WriteString(v.Addr + " " + v.Name + " " + v.Status + "?")
             }
+            readwrite.WriteString("\n")
             readwrite.Flush()
         }
 

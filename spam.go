@@ -24,6 +24,7 @@ func main(){
     go handleexit(exitchannel)
 
     configfile := "spam_core.cfg"
+    logfile := ".log"
 
     // Search for command flags
     for i, v := range os.Args {
@@ -31,17 +32,21 @@ func main(){
         if v == "-i" {
             if len(os.Args) > i {
                 configfile = os.Args[i + 1]
+                logfile = ".log" + configfile
             } else {
                 fmt.Println("You failed to run this.")
                 os.Exit(0)
             }
         } else if v == "-c" {
-            defer console.Start()
+            if len(os.Args) > i + 1 {
+                logfile = os.Args[i + 1]
+            }
+            defer console.Start(logfile)
             return
         }
     }
 
-    log, _ := os.Create(".log")
+    log, _ := os.Create(logfile)
 
     cfg := parsecfg.ParseCfg(configfile)
 
