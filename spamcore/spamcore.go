@@ -40,11 +40,12 @@ func logger(ch chan string) {
 
 func server(listener net.Listener, ch chan string) {
     for {
-        c, or := listener.Accept()
+        conn, or := listener.Accept()
+        defer conn.Close()
         if e.Rr(or, false) {
             continue
         }
-        go handler(c, ch)
+        go handler(conn, ch)
     }
 }
 /*
@@ -129,6 +130,7 @@ func send(cfg *parsecfg.Cfg) {
 func StartServer(cfg *parsecfg.Cfg) {
     listener, or := net.Listen("tcp", ":" + strconv.Itoa(cfg.Port))
     e.Rr(or, true)
+    defer listener.Close()
 
     ch := make(chan string)
     go logger(ch)
