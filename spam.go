@@ -10,7 +10,7 @@ import (
 )
 
 func handleexit(exit chan os.Signal) {
-    for signal := range exit {
+    for range exit {
         os.Remove(".log")
         // Handle exit status
         os.Exit(1)
@@ -41,9 +41,9 @@ func main(){
         }
     }
 
-    os.Create(".log")
+    log, _ := os.Create(".log")
 
     cfg := parsecfg.ParseCfg(configfile)
 
-    spamcore.StartServer(cfg)
+    spamcore.StartServer(log, cfg)
 }

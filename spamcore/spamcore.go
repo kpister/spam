@@ -4,15 +4,17 @@ package spamcore
 // Other source: https://systembash.com/a-simple-go-tcp-server-and-tcp-client/
 
 import (
+    "os"
     "fmt"
     "net"
-    "bufio"
     "time"
+    "bufio"
+    "strings"
     "strconv"
 
     "github.com/kpister/spam/e"
-    "github.com/kpister/spam/parsecfg"
     "github.com/kpister/spam/peer"
+    "github.com/kpister/spam/parsecfg"
 )
 
 func handler(conn net.Conn, ch chan string) {
@@ -127,7 +129,39 @@ func send(cfg *parsecfg.Cfg) {
         time.Sleep(5000 * time.Millisecond)
     }
 }
-func StartServer(cfg *parsecfg.Cfg) {
+
+func handleconsole(log *os.File, cfg *parsecfg.Cfg) {
+    // Every 1 second read in .log
+    // If top line is a command, execute that command
+    readwrite := bufio.NewReadWriter(bufio.NewReader(log), bufio.NewWriter(log))
+    for {
+        log.Seek(0,0)
+        time.Sleep(1000 * time.Millisecond)
+        cmd, or := readwrite.ReadString('\n')
+        if or != nil {
+            continue
+        }
+
+        pieces := strings.Split(cmd, " ")
+
+        // c: console, n: node
+        if pieces[0] != "c" {
+            continue
+        }
+
+        log.Seek(0,0)
+        // handle commands
+        if pieces[1] == "peers" {
+            for _, v := range cfg.Peers {
+                readwrite.WriteString(v.Addr + " " + v.Name + " " + v.Status + "\n")
+            }
+            readwrite.Flush()
+        }
+
+    }
+}
+
+func StartServer(log *os.File, cfg *parsecfg.Cfg) {
     listener, or := net.Listen("tcp", ":" + strconv.Itoa(cfg.Port))
     e.Rr(or, true)
     defer listener.Close()
@@ -136,5 +170,6 @@ func StartServer(cfg *parsecfg.Cfg) {
     go logger(ch)
     go server(listener, ch)
     go send(cfg)
+    go handleconsole(log, cfg)
     for {}
 }
