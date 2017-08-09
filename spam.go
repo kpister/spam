@@ -7,7 +7,6 @@ import (
     "github.com/kpister/spam/spamcore"
     "github.com/kpister/spam/parsecfg"
     "github.com/kpister/spam/console"
-    "github.com/kpister/spam/e"
 )
 
 func handleexit(exit chan os.Signal) {
@@ -48,10 +47,7 @@ func main(){
         }
     }
 
-    log, or := os.Create(logfile)
-    e.Rr(or, true)
-
     cfg := parsecfg.ParseCfg(configfile)
 
-    spamcore.StartServer(log, cfg)
+    spamcore.StartServer(logfile, cfg)
 }
