@@ -1,7 +1,10 @@
 # spam
 
 # Upcoming tasks and how to contribute
-
+* - [ ] Console
+  * - [x] Implement simple file io console
+  * - [ ] Brainstorm other ideas which might be better
+  
 * - [ ] Authentication:
   * - [ ] Read and understand RSA aglorithm
   * - [ ] Look into Go-lang libraries which will help
@@ -11,6 +14,7 @@
       * Accept all
       * Accept people I have in cfg
       * Accept something else
+
 * - [ ] Implement SCP
 
 # To install and use
