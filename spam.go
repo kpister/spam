@@ -34,7 +34,7 @@ func main(){
         if v == "-i" {
             if len(os.Args) > i {
                 configfile = os.Args[i + 1]
-                logfile = ".log" + configfile
+                logfile = ".log_" + configfile
             } else {
                 fmt.Println("You failed to run this.")
                 os.Exit(0)
