@@ -1,5 +1,20 @@
 # spam
 
+# Upcoming tasks and how to contribute
+
+* - [ ] Authentication:
+  * - [ ] Read and understand RSA aglorithm
+  * - [ ] Look into Go-lang libraries which will help
+  * - [ ] Implement RSA on a branch
+    * Notes: this is to connect the peers we have in our .cfg with the peers that are connecting with us
+    * We will want to consider some policies for openness
+      * Accept all
+      * Accept people I have in cfg
+      * Accept something else
+* - [ ] Implement SCP
+
+# To install and use
+
 install go: https://golang.org/dl
 
 `mkdir -p ~/go/src && cd $_` OR `mkdir -p some/dir/here/src && cd $_ && export GOPATH=$(some/dir/here)`
