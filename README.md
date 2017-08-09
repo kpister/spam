@@ -14,6 +14,11 @@ OR `export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam-
 
 edit spam_core.cfg with the IPs of your peers. These will be the ones spam-core connects to by default
 
+`spam` will default to use spam_core.cfg and .log, if you change the name of the cfg file, the console will only work if you do the following:
+
+`spam -c .log_new_cfg_file_name.cfg`
+
+Once you have the console running, you can check your peer status by typing `peer`
 
 For a test network to show it is working?
 

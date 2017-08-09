@@ -15,7 +15,8 @@ func Start(logfile string) {
     fmt.Println("Starting console...")
     reader := bufio.NewReader(os.Stdin)
 
-    log, _ := os.Open(logfile)
+    log, or := os.OpenFile(logfile, os.O_RDWR, 0777)
+    e.Rr(or, true)
     readwrite := bufio.NewReadWriter(bufio.NewReader(log), bufio.NewWriter(log))
 
     for  {
@@ -26,18 +27,18 @@ func Start(logfile string) {
         log.Seek(0,0)
 
         if cmd == "peers\n" {
-            readwrite.WriteString("c peers\n")
+            _, or := readwrite.WriteString("c peers\n")
+            e.Rr(or, false)
         }
-        readwrite.Flush()
-
+        or = readwrite.Flush()
+        e.Rr(or, false)
         time.Sleep(1200 * time.Millisecond)
 
         log.Seek(0,0)
 
         line, or := readwrite.ReadString('\n')
         output := strings.Replace(line, "?", "\n", -1)
-        fmt.Println(output)
-
+        fmt.Print(output)
 
     }
 }

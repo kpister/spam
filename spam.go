@@ -7,12 +7,14 @@ import (
     "github.com/kpister/spam/spamcore"
     "github.com/kpister/spam/parsecfg"
     "github.com/kpister/spam/console"
+    "github.com/kpister/spam/e"
 )
 
 func handleexit(exit chan os.Signal) {
     for range exit {
         os.Remove(".log")
         // Handle exit status
+        fmt.Print("\n")
         os.Exit(1)
     }
 }
@@ -46,7 +48,8 @@ func main(){
         }
     }
 
-    log, _ := os.Create(logfile)
+    log, or := os.Create(logfile)
+    e.Rr(or, true)
 
     cfg := parsecfg.ParseCfg(configfile)
 

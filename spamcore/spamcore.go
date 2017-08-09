@@ -155,7 +155,6 @@ func handleconsole(log *os.File, cfg *parsecfg.Cfg) {
             for _, v := range cfg.Peers {
                 readwrite.WriteString(v.Addr + " " + v.Name + " " + v.Status + "?")
             }
-            readwrite.WriteString("\n")
             readwrite.Flush()
         }
 
