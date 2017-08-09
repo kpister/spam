@@ -1,4 +1,4 @@
-# spam-core
+# spam
 
 install go: https://golang.org/dl
 
@@ -14,21 +14,15 @@ OR `export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam-
 
 edit spam_core.cfg with the IPs of your peers. These will be the ones spam-core connects to by default
 
-`spam`
 
-(new tab) `spam`
+For a test network to show it is working?
 
-(new tab) `spam`
+`spam -i node1.cfg`
 
+(new tab) `spam -i node2.cfg`
 
-for each instance:
+(new tab) `spam -i node3.cfg`
 
-enter a unique port (eg: 8080, 8081, 8082)
+Feel free to close and reconnect each of the nodes.
 
-use the command `connect` to connect to a single peer (you will be prompted for address)
-
-enter the address of the other clientservers (`127.0.0.1:8080`, `127.0.0.1:8081`, `127.0.0.1:8082`)
-
-use the command `broadcast` to send a message to all of your peers (you will be prompted for a message)
-
-enter your message and see it in the other nodes!
+Expected behavior is that the nodes will connect within a couple of seconds and start broadcasting their current clock time every five seconds.
