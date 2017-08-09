@@ -16,6 +16,10 @@
       * Accept something else
 
 * - [ ] Implement SCP
+  * - [ ] Reread SCP paper
+  * - [ ] Read Stellar's SCP implementation
+  * - [ ] Draw out how we will do it in spam (including classes, file directory structure, etc)
+  * - [ ] Start writing code
 
 # To install and use
 
