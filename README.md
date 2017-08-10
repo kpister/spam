@@ -6,14 +6,15 @@
   * - [ ] Brainstorm other ideas which might be better
   
 * - [ ] Authentication:
-  * - [ ] Read and understand RSA aglorithm
-  * - [ ] Look into Go-lang libraries which will help
+  * - [x] Read and understand RSA aglorithm
+  * - [x] Look into Go-lang libraries which will help
   * - [ ] Implement RSA on a branch
     * Notes: this is to connect the peers we have in our .cfg with the peers that are connecting with us
-    * We will want to consider some policies for openness
+    * [ ] We will want to consider some policies for openness
       * Accept all
       * Accept people I have in cfg
       * Accept something else
+    * [ ] It would be nice to shrink the public private key values. There is a lot of documentation on this
 
 * - [ ] Implement SCP
   * - [ ] Reread SCP paper
