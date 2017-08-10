@@ -2,9 +2,10 @@
 package parsecfg
 
 import (
-    "io/ioutil"
+    "fmt"
     "strings"
     "strconv"
+    "io/ioutil"
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/peer"
@@ -13,6 +14,7 @@ import (
 type Cfg struct {
     Peers []peer.Peer
     Port int
+    Secret string
 }
 
 func ParseCfg(filename string) *Cfg {
@@ -32,15 +34,16 @@ func ParseCfg(filename string) *Cfg {
             readpeers = false
         } else if readpeers {
             ppieces := strings.Split(v, " ")
-            pname := ""
-            e.Rr(or, false)
-            if len(ppieces) > 1 {
-                pname = ppieces[1]
+            if len(ppieces) != 3 {
+                fmt.Println("Skipping peer: not formatted correctly: ip name public_key")
+                continue
             }
-            mpeer := peer.MakePeer(ppieces[0], pname)
+            mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
             cfg.Peers = append(cfg.Peers, *mpeer)
         } else if strings.Contains(v, "port") {
             cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
+        } else if strings.Contains(v, "secret") {
+            cfg.Secret = strings.Split(v, " ")[1]
         }
 
     }

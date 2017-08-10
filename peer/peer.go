@@ -12,18 +12,19 @@ type Peer struct {
     Name string
     Status string
     Addr string
+    PublicKey string
 }
 
-func MakePeer(addr, name string) *Peer {
+func MakePeer(addr, name string, public string) *Peer {
     conn, or := net.Dial("tcp", addr)
     stop := e.Rr(or, false)
 
     if !stop {
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
-        return &Peer{conn, name, "connected", addr}
+        return &Peer{conn, name, "connected", addr, public}
     }
 
-    return &Peer{conn, name, "offline", addr}
+    return &Peer{conn, name, "offline", addr, public}
 }
 
 func Connect(peer *Peer) {

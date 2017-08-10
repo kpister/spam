@@ -74,6 +74,8 @@ func handleconsole(logfile string, cfg *parsecfg.Cfg) {
             continue
         }
 
+        // Information is transfered in the form: c (for console) command params
+        // params is further split inside the handling of each command
         pieces := strings.SplitN(strings.TrimSpace(string(cmd)), " ", 3)
 
         // c: console
@@ -95,16 +97,15 @@ func handleconsole(logfile string, cfg *parsecfg.Cfg) {
                 }
             }
             filecmd = "Message sent?"
-        } else if pieces[1] == "add" && len(pieces) == 3 {
+        } else if pieces[1] == "add" && len(pieces) == 4 {
             ppieces := strings.Split(pieces[2], " ")
-            name := " "
-            if len(ppieces) == 2 {
-                name = ppieces[1]
+            if len(ppieces) != 3 {
+                filecmd = "Please supply ip, name, public key"
+            } else {
+                mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
+                cfg.Peers = append(cfg.Peers, *mpeer)
+                filecmd = "Peer added: " + ppieces[0] + "?"
             }
-
-            mpeer := peer.MakePeer(ppieces[0], name)
-            cfg.Peers = append(cfg.Peers, *mpeer)
-            filecmd = "Peer added: " + ppieces[0] + "?"
         } else if pieces[1] == "dropbyip" && len(pieces) == 3 {
             filecmd = removePeer(true, pieces[2], cfg)
         } else if pieces[1] == "dropbyname" && len(pieces) == 3 {

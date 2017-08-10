@@ -2,11 +2,13 @@ package main
 
 import (
     "os"
-    "os/signal"
     "fmt"
+    "os/signal"
+
+    "github.com/kpister/spam/keygen"
+    "github.com/kpister/spam/console"
     "github.com/kpister/spam/spamcore"
     "github.com/kpister/spam/parsecfg"
-    "github.com/kpister/spam/console"
 )
 
 func handleexit(exit chan os.Signal) {
@@ -43,6 +45,12 @@ func main(){
                 logfile = os.Args[i + 1]
             }
             defer console.Start(logfile)
+            return
+        } else if v == "--gen-keypair" {
+            keygen.GenKeys()
+            return
+        } else if i > 0 {
+            fmt.Println("That isn't a command...")
             return
         }
     }
