@@ -1,6 +1,8 @@
 # spam
 
 # Upcoming tasks and how to contribute
+_Always check the corresponding branch for current progress on a given feature_
+
 * - [ ] Console
   * - [x] Implement simple file io console
   * - [ ] Brainstorm other ideas which might be better
