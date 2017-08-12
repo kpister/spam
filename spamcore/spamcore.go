@@ -65,7 +65,7 @@ func send(cfg *parsecfg.Cfg) {
 }
 
 func handleconsole(logfile string, cfg *parsecfg.Cfg) {
-    // Every 1 second read in .log
+    // Every .1 second read in .log
     // If top line is a command, execute that command
     for {
         time.Sleep(100 * time.Millisecond)

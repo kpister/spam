@@ -5,6 +5,7 @@ import (
     "fmt"
     "strings"
     "strconv"
+    "math/big"
     "io/ioutil"
 
     "github.com/kpister/spam/e"
@@ -14,7 +15,7 @@ import (
 type Cfg struct {
     Peers []peer.Peer
     Port int
-    Secret string
+    Secret big.Int
 }
 
 func ParseCfg(filename string) *Cfg {
@@ -27,7 +28,7 @@ func ParseCfg(filename string) *Cfg {
     pieces := strings.Split(contents, "\n")
 
     readpeers := false
-    for _, v := range pieces {
+    for i, v := range pieces {
         if v == "peers" {
             readpeers = true
         } else if v == "end" {
@@ -38,12 +39,25 @@ func ParseCfg(filename string) *Cfg {
                 fmt.Println("Skipping peer: not formatted correctly: ip name public_key")
                 continue
             }
-            mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
+            key, suc := big.SetString(ppieces[2], 10)
+            if suc {
+                mpeer := peer.MakePeer(ppieces[0], ppieces[1], key)
+            } else {
+                fmt.Printf("Key not formatted correctly on line %d\n", i)
+                continue
+            }
             cfg.Peers = append(cfg.Peers, *mpeer)
         } else if strings.Contains(v, "port") {
             cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
         } else if strings.Contains(v, "secret") {
-            cfg.Secret = strings.Split(v, " ")[1]
+            key, suc := big.SetString(strings.Split(v, " ")[1], 10)
+            if suc {
+                cfg.Secret := key
+            } else {
+                fmt.Printf("Key not formatted correctly on line %d\n", i)
+                continue
+            }
+
         }
 
     }
