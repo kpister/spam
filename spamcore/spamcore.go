@@ -27,6 +27,11 @@ func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
         message, or := reader.ReadString('\n')
         if or != nil && or.Error() == "EOF" {
             ch <- "Disconnected from " + remoteAddr + "\n"
+            for i, v := range cfg.Peers {
+                if v.RemoteAddr == remoteAddr {
+                    cfg.Peers[i].Status = "offline"
+                }
+            }
             break
         } else if !e.Rr(or, true) {
             // output message received
@@ -48,7 +53,7 @@ func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
 func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     var k big.Int
     key, suc := k.SetString(strings.TrimSpace(keystring), 10)
-    fmt.Println("Trying to handshake...")
+    fmt.Println("Trying to handshake with ", remoteaddr, "...")
 
     if suc {
         decrypted := crypto.Decrypt(key, &(cfg.SecretKey), &(cfg.PublicKey))
@@ -88,7 +93,7 @@ func server(listener net.Listener, ch chan string, cfg *parsecfg.Cfg) {
 func send(cfg *parsecfg.Cfg) {
     for {
         for i, v := range cfg.Peers {
-            if v.Status == "authenticated" {
+            if v.Status == "authenticated" || v.Status == "authsent" {
                 fmt.Fprintf(v.Conn, time.Now().String() + "\n")
             } else if v.Status == "offline" || v.Status == "authrec" {
                 peer.Connect(&cfg.Peers[i])
@@ -126,7 +131,7 @@ func handleconsole(logfile string, cfg *parsecfg.Cfg) {
             }
         } else if pieces[1] == "broadcast" && len(pieces) == 3 {
             for _, v := range cfg.Peers {
-                if v.Status == "connected" {
+                if v.Status == "authenticated" || v.Status == "authsent" {
                     fmt.Fprintf(v.Conn, pieces[2])
                 }
             }
