@@ -15,39 +15,45 @@ type Peer struct {
     Name string
     Status string
     Addr string
-    PublicKey big.Int
+    PublicKey *big.Int
 }
 
-func MakePeer(addr, name string, public *Int) *Peer {
+func MakePeer(addr, name string, public string) *Peer {
+    var key big.Int
+    pub, suc := key.SetString(public, 10)
     conn, or := net.Dial("tcp", addr)
     stop := e.Rr(or, false)
-    handshake(conn, public)
 
-    if !stop {
+    if !stop && suc {
+        handshake(conn, pub)
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
-        return &Peer{conn, name, "connected", addr, public}
+        return &Peer{conn, name, "connected", addr, pub}
     }
 
-    return &Peer{conn, name, "offline", addr, public}
+    return &Peer{conn, name, "offline", addr, pub}
 }
 
 func Connect(peer *Peer) {
     conn, or := net.Dial("tcp", peer.Addr)
-    handshake(peer.Conn, peer.Modulus)
 
     if !e.Rr(or, false) {
+        handshake(conn, peer.PublicKey)
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
         peer.Status = "connected"
         peer.Conn = conn
     }
 }
 
-func handshake(conn net.Conn, modulus big.Int) bool {
+func handshake(conn net.Conn, modulus *big.Int) bool {
     //return true if it works
     // TODO When we dial a peer, send an encrypted (signed) message
-    m := ""
+    m := "asdfasdfd"
     // Create message
-    fmt.Fprintf(conn, crypto.Encrypt(crypto.ConvertMessageToInt(m), modulus))
+    kd := crypto.ConvertMessageToInt(m)
+    message := (crypto.Encrypt(kd, modulus)).String()
+    fmt.Println("Message: " + kd.String())
+    fmt.Println("Encrypted: " + message)
+    fmt.Fprintf(conn, message)
     // Listen for response
         // Check response
         // nm := crypto.Decrypt(response, cfg.Private, modulus)

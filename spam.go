@@ -5,6 +5,7 @@ import (
     "fmt"
     "os/signal"
 
+    "github.com/kpister/spam/crypto"
     "github.com/kpister/spam/keygen"
     "github.com/kpister/spam/console"
     "github.com/kpister/spam/spamcore"
@@ -49,12 +50,10 @@ func main(){
         } else if v == "--gen-keypair" {
             keygen.GenKeys()
             return
-        } else if i > 0 {
-            fmt.Println("That isn't a command...")
-            return
         }
     }
 
+    crypto.SetE()
     cfg := parsecfg.ParseCfg(configfile)
 
     spamcore.StartServer(logfile, cfg)

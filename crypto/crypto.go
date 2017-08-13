@@ -5,32 +5,36 @@ import (
     "math/big"
 )
 
-var e = big.Int
+var e big.Int
 
 func SetE() {
     e.SetUint64(65537)
 }
 
-func Encrypt(m, n big.Int) big.Int {
+func Encrypt(m, n *big.Int) *big.Int {
     var c big.Int
-    c = c.Exp(&m, &e, &n)
-    return c
+    c.Exp(m, &e, n)
+    return &c
 }
 
-func Decrypt(c, d, n big.Int) big.Int{
+func Decrypt(c, d, n *big.Int) *big.Int{
     var m big.Int
-    m = m.Exp(&c, &d, &n)
-    return m
+    m.Exp(c, d, n)
+    return &m
 }
 
-func ConvertMessageToInt(m string) big.Int {
+func ConvertMessageToInt(m string) *big.Int {
     var total big.Int
+    total.SetInt64(0)
+    var length big.Int
+    length.SetInt64(int64(len(m)))
     // Find a good way to write this
-    return total
+    total.Add(&total, &length)
+    return &total
 }
 
 func ConvertMessageFromInt(m big.Int) string {
-    message := ""
+    message := string(m.Uint64())
     // Find a good way to write this.
     return message
 }

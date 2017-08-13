@@ -39,20 +39,15 @@ func ParseCfg(filename string) *Cfg {
                 fmt.Println("Skipping peer: not formatted correctly: ip name public_key")
                 continue
             }
-            key, suc := big.SetString(ppieces[2], 10)
-            if suc {
-                mpeer := peer.MakePeer(ppieces[0], ppieces[1], key)
-            } else {
-                fmt.Printf("Key not formatted correctly on line %d\n", i)
-                continue
-            }
+            mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
             cfg.Peers = append(cfg.Peers, *mpeer)
         } else if strings.Contains(v, "port") {
             cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
         } else if strings.Contains(v, "secret") {
-            key, suc := big.SetString(strings.Split(v, " ")[1], 10)
+            var key big.Int
+            _, suc := key.SetString(strings.Split(v, " ")[1], 10)
             if suc {
-                cfg.Secret := key
+                cfg.Secret = key
             } else {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue
