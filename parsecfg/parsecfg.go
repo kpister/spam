@@ -38,6 +38,9 @@ func ParseCfg(filename string, testing bool) *Cfg {
 
     readpeers := false
     for i, v := range pieces {
+        if len(v) > 0 && v[0] == byte('#') {
+            continue
+        }
         if v == "peers" {
             readpeers = true
         } else if v == "end" {
