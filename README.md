@@ -11,9 +11,12 @@
   * - [ ] Implement RSA on a branch
     * - [x] Easy way to generate private and public keys
     * - [x] Encrypt and decrypt message functions
-    * - [ ] Link encryption and decryption to identify for authentication
+    * - [x] Link encryption and decryption to identify for authentication
       * - [x] Send encrypted messages
-      * - [ ] Receive and decrypt the messages - creating the association
+      * - [x] Receive and decrypt the messages - creating the association
+    * - [ ] Improve on the algorithms
+    * - [ ] Add digital signing to all messages
+    * - [ ] Test more
     * Notes: this is to connect the peers we have in our .cfg with the peers that are connecting with us
     * [ ] We will want to consider some policies for openness
       * Accept all
