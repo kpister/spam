@@ -19,6 +19,7 @@ import (
     "github.com/kpister/spam/parsecfg"
 )
 
+// Here we handle incoming messages
 func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
     reader := bufio.NewReader(conn)
     remoteAddr := conn.RemoteAddr().String()
@@ -30,16 +31,18 @@ func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
             for i, v := range cfg.Peers {
                 if v.RemoteAddr == remoteAddr {
                     cfg.Peers[i].Status = "offline"
+                    cfg.Peers[i].RemoteAddr = ""
                 }
             }
-            break
+            break // This is when they close their node
         } else if !e.Rr(or, true) {
             // output message received
             if strings.Contains(string(message), "Handshake:") {
                 pieces := strings.Split(string(message), ":")
-                go handleshake(pieces[1], remoteAddr, cfg)
+                go handleshake(pieces[1], remoteAddr, cfg) // Handle handshake
             }
 
+            // We only acknowledge messages from peers we have authenticated (authrec at least)
             for _, v := range cfg.Peers {
                 if v.RemoteAddr == remoteAddr {
                     ch <- "Message Received from " + v.Name +":" + string(message)
@@ -50,6 +53,8 @@ func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
     conn.Close()
 }
 
+// Decrypt message and figure out who sent it
+// TODO add digital signiture 
 func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     var k big.Int
     key, suc := k.SetString(strings.TrimSpace(keystring), 10)
@@ -73,12 +78,14 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     }
 }
 
+// Just how we print... could be done differently...
 func logger(ch chan string) {
     for {
         fmt.Print(<-ch)
     }
 }
 
+// Start the actual server which spawns off all the little threads
 func server(listener net.Listener, ch chan string, cfg *parsecfg.Cfg) {
     for {
         conn, or := listener.Accept()
@@ -90,6 +97,8 @@ func server(listener net.Listener, ch chan string, cfg *parsecfg.Cfg) {
     }
 }
 
+// Here is where we actually broadcast messages to peers we have authsent at least
+// Alternatively we try and connect to our offline and authrec peers
 func send(cfg *parsecfg.Cfg) {
     for {
         for i, v := range cfg.Peers {
@@ -103,6 +112,7 @@ func send(cfg *parsecfg.Cfg) {
     }
 }
 
+// Deal with the console file io. Check console/console.go for more infomation
 func handleconsole(logfile string, cfg *parsecfg.Cfg) {
     // Every .1 second read in .log
     // If top line is a command, execute that command
@@ -176,8 +186,6 @@ func removePeer(byip bool, text string, cfg *parsecfg.Cfg) string {
     }
     return response
 }
-
-
 
 func StartServer(logfile string, cfg *parsecfg.Cfg) {
     listener, or := net.Listen("tcp", cfg.MyIP + ":" + strconv.Itoa(cfg.Port))

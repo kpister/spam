@@ -12,6 +12,10 @@ import (
     "github.com/kpister/spam/e"
 )
 
+/* Commands are communicated with the node through file io to logfile
+* The default file is .log, but when a different cfg is used, .log_cfgfile is used instead
+* The commands are written in the format: c command [args1 arg2...]
+*/
 func Start(logfile string) {
     fmt.Println("Starting console...")
     reader := bufio.NewReader(os.Stdin)
@@ -25,6 +29,8 @@ func Start(logfile string) {
 
         var filecmd string
 
+
+        // TODO Many commands require a second input (see broadcast). This might be refactored to be more friendly
         if cmd == "peers" {
             filecmd = "c peers\n"
         } else if cmd == "broadcast" {
@@ -43,7 +49,7 @@ func Start(logfile string) {
             }
 
             filecmd = "c add " + text
-        } else if cmd == "drop peer by ip" {
+        } else if cmd == "drop peer by ip" {  // TODO We might remove this... I don't like it
             fmt.Print("Enter ip:port of peer you wish to drop: ")
             text, or := reader.ReadString('\n')
             if e.Rr(or, false) {
@@ -62,16 +68,18 @@ func Start(logfile string) {
         } else if cmd == "drop peer" {
             fmt.Println("To drop a peer, either use `drop peer by ip` or `drop peer by name`")
             continue
-        } else {
-            fmt.Println("That command didn't make sense. Try again")
+        } else { // TODO Add a send transaction (similar to broadcast, but once we have SCP
+            fmt.Println("That command didn't make sense. Try again") // TODO Add more error handling
             continue
         }
 
         or = ioutil.WriteFile(logfile, []byte(filecmd), 0770)
         e.Rr(or, false)
 
+        // We sleep for .2 seconds waiting for the node to respond. Realistically could be less.
         time.Sleep(200 * time.Millisecond)
 
+        // Every command is a single response. We make up for this with ?
         line, or := ioutil.ReadFile(logfile)
         output := strings.Replace(string(line), "?", "\n", -1)
         fmt.Print(output)

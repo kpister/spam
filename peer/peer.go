@@ -36,6 +36,7 @@ func SetAddr(addr string) {
     maddr = addr
 }
 
+// Used when first created a peer (through console or through parsecfg)
 func MakePeer(addr, name string, public string) *Peer {
     var key big.Int
     pub, suc := key.SetString(public, 10)
@@ -52,6 +53,7 @@ func MakePeer(addr, name string, public string) *Peer {
     return &Peer{conn, name, "offline", addr, pub, m, ""}
 }
 
+// Used when trying to connect to a peer later (during the 5 second refreshes)
 func Connect(peer *Peer) {
     conn, or := net.Dial("tcp", peer.Addr)
     m := maddr // TODO: Set a proper message here
@@ -59,6 +61,8 @@ func Connect(peer *Peer) {
     if !e.Rr(or, false) {
         handshake(conn, peer.PublicKey, m)
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
+        // This is how we distinguish between if they have contacted us or not
+        // Once we have connected to them, we can send them messages (they might ignore us though)
         if peer.Status == "authrec" {
             peer.Status = "authenticated"
         } else {
@@ -68,6 +72,7 @@ func Connect(peer *Peer) {
     }
 }
 
+// Send the first shake
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
     kd := crypto.ConvertMessageToInt(m)

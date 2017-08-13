@@ -30,18 +30,21 @@ func ParseCfg(filename string, testing bool) *Cfg {
     contents := string(bytecontents)
     pieces := strings.Split(contents, "\n")
 
+    // Right now this is always true. We would change to false for non-localhost
+    // TODO make this a parse flag?
     if !testing {
         cfg.MyIP = getMyIP()
     } else {
         cfg.MyIP = "127.0.0.1"
     }
 
+    // Handle the file contents
     readpeers := false
     for i, v := range pieces {
-        if len(v) > 0 && v[0] == byte('#') {
+        if len(v) > 0 && v[0] == byte('#') { // Comments
             continue
         }
-        if v == "peers" {
+        if v == "peers" { // Create peer list
             readpeers = true
         } else if v == "end" {
             readpeers = false
@@ -80,7 +83,7 @@ func ParseCfg(filename string, testing bool) *Cfg {
     return &cfg
 }
 
-// courtesy of jniltonho
+// courtesy of jniltonho but this just seems really simple...
 func getMyIP() string {
     addrs, or := net.InterfaceAddrs()
     e.Rr(or, true)

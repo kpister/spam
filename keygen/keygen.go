@@ -9,6 +9,9 @@ import (
     "github.com/kpister/spam/e"
 )
 
+// Stand alone code to generate public and private keys.
+// Keep both for yourself and share the public with your friends!
+// This is run with spam -gen-keypair
 func GenKeys() {
     reader := rand.Reader
     bitsize := 2048
