@@ -58,8 +58,14 @@ func main(){
         } else if v == "--gen-keypair" {
             keygen.GenKeys()
             return
+        } else if v == "--help" || v == "-h" {
+            fmt.Println("Here is some help:\nTo run: spam\n" +
+                        "To use a new cfg file: spam -i newcfg.cfg\n" +
+                        "To run the console: spam -c\nTo generate a keypair: spam --gen-keypair\n" +
+                        "For further documentation, visit https://github.com/kpister/spam")
+            return
         } else {
-            fmt.Println("That command doesn't exist")
+            fmt.Println("That command doesn't exist. Try spam --help to see options")
             return
         }
     }
