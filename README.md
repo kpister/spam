@@ -10,14 +10,16 @@
   * - [x] Look into Go-lang libraries which will help
   * - [ ] Implement RSA on a branch
     * - [x] Easy way to generate private and public keys
-    * - [ ] Encrypt and decrypt message functions
+    * - [x] Encrypt and decrypt message functions
     * - [ ] Link encryption and decryption to identify for authentication
-      * Notes: this is to connect the peers we have in our .cfg with the peers that are connecting with us
-      * [ ] We will want to consider some policies for openness
-        * Accept all
-        * Accept people I have in cfg
-        * Accept something else
-      * [ ] It would be nice to shrink the public private key values. There is a lot of documentation on this
+      * - [x] Send encrypted messages
+      * - [ ] Receive and decrypt the messages - creating the association
+    * Notes: this is to connect the peers we have in our .cfg with the peers that are connecting with us
+    * [ ] We will want to consider some policies for openness
+      * Accept all
+      * Accept people I have in cfg
+      * Accept something else
+    * [ ] It would be nice to shrink the public private key values. There is a lot of documentation on this
 
 * - [ ] Implement SCP
   * - [ ] Reread SCP paper

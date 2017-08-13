@@ -46,14 +46,14 @@ func Connect(peer *Peer) {
 
 func handshake(conn net.Conn, modulus *big.Int) bool {
     //return true if it works
-    // TODO When we dial a peer, send an encrypted (signed) message
-    m := "asdfasdfd"
+    // When we dial a peer, send an encrypted (signed) message
+    m := "asdfasdfd" // TODO: Set a proper message here
     // Create message
     kd := crypto.ConvertMessageToInt(m)
     message := (crypto.Encrypt(kd, modulus)).String()
     fmt.Println("Message: " + kd.String())
     fmt.Println("Encrypted: " + message)
-    fmt.Fprintf(conn, message)
+    fmt.Fprintf(conn, "Handshake:" + message)
     // Listen for response
         // Check response
         // nm := crypto.Decrypt(response, cfg.Private, modulus)
