@@ -10,14 +10,16 @@ import (
     "bufio"
     "strings"
     "strconv"
+    "math/big"
     "io/ioutil"
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/peer"
+    "github.com/kpister/spam/crypto"
     "github.com/kpister/spam/parsecfg"
 )
 
-func handler(conn net.Conn, ch chan string) {
+func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
     reader := bufio.NewReader(conn)
     remoteAddr := conn.RemoteAddr().String()
 
@@ -28,10 +30,42 @@ func handler(conn net.Conn, ch chan string) {
             break
         } else if !e.Rr(or, true) {
             // output message received
-            ch <- "Message Received from " + remoteAddr +":" + string(message)
+            if strings.Contains(string(message), "Handshake:") {
+                pieces := strings.Split(string(message), ":")
+                go handleshake(pieces[1], remoteAddr, cfg)
+            }
+
+            for _, v := range cfg.Peers {
+                if v.RemoteAddr == remoteAddr {
+                    ch <- "Message Received from " + v.Name +":" + string(message)
+                }
+            }
         }
     }
     conn.Close()
+}
+
+func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
+    var k big.Int
+    key, suc := k.SetString(strings.TrimSpace(keystring), 10)
+    fmt.Println("Trying to handshake...")
+
+    if suc {
+        decrypted := crypto.Decrypt(key, &(cfg.SecretKey), &(cfg.PublicKey))
+        message := crypto.ConvertMessageFromInt(decrypted)
+
+        for i, v := range cfg.Peers {
+            if message == v.Addr {
+                fmt.Println("Decrypted message: " + message + " Peer addr: " + v.Addr)
+                cfg.Peers[i].RemoteAddr = remoteaddr
+                if v.Status == "authsent" {
+                    cfg.Peers[i].Status = "authenticated"
+                } else {
+                    cfg.Peers[i].Status = "authrec"
+                }
+            }
+        }
+    }
 }
 
 func logger(ch chan string) {
@@ -40,23 +74,23 @@ func logger(ch chan string) {
     }
 }
 
-func server(listener net.Listener, ch chan string) {
+func server(listener net.Listener, ch chan string, cfg *parsecfg.Cfg) {
     for {
         conn, or := listener.Accept()
         defer conn.Close()
         if e.Rr(or, false) {
             continue
         }
-        go handler(conn, ch)
+        go handler(conn, ch, cfg)
     }
 }
 
 func send(cfg *parsecfg.Cfg) {
     for {
         for i, v := range cfg.Peers {
-            if v.Status == "connected" {
+            if v.Status == "authenticated" {
                 fmt.Fprintf(v.Conn, time.Now().String() + "\n")
-            } else if v.Status == "offline" {
+            } else if v.Status == "offline" || v.Status == "authrec" {
                 peer.Connect(&cfg.Peers[i])
             }
         }
@@ -141,13 +175,13 @@ func removePeer(byip bool, text string, cfg *parsecfg.Cfg) string {
 
 
 func StartServer(logfile string, cfg *parsecfg.Cfg) {
-    listener, or := net.Listen("tcp", ":" + strconv.Itoa(cfg.Port))
+    listener, or := net.Listen("tcp", cfg.MyIP + ":" + strconv.Itoa(cfg.Port))
     e.Rr(or, true)
     defer listener.Close()
 
     ch := make(chan string)
     go logger(ch)
-    go server(listener, ch)
+    go server(listener, ch, cfg)
     go send(cfg)
     go handleconsole(logfile, cfg)
     for {}

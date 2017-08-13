@@ -54,7 +54,7 @@ func main(){
     }
 
     crypto.SetE()
-    cfg := parsecfg.ParseCfg(configfile)
+    cfg := parsecfg.ParseCfg(configfile, true)
 
     spamcore.StartServer(logfile, cfg)
 }

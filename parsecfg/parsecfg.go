@@ -2,6 +2,7 @@
 package parsecfg
 
 import (
+    "net"
     "fmt"
     "strings"
     "strconv"
@@ -15,10 +16,12 @@ import (
 type Cfg struct {
     Peers []peer.Peer
     Port int
-    Secret big.Int
+    SecretKey big.Int
+    PublicKey big.Int
+    MyIP string
 }
 
-func ParseCfg(filename string) *Cfg {
+func ParseCfg(filename string, testing bool) *Cfg {
     cfg := Cfg{}
 
     bytecontents, or := ioutil.ReadFile(filename)
@@ -26,6 +29,12 @@ func ParseCfg(filename string) *Cfg {
 
     contents := string(bytecontents)
     pieces := strings.Split(contents, "\n")
+
+    if !testing {
+        cfg.MyIP = getMyIP()
+    } else {
+        cfg.MyIP = "127.0.0.1"
+    }
 
     readpeers := false
     for i, v := range pieces {
@@ -42,20 +51,43 @@ func ParseCfg(filename string) *Cfg {
             mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
             cfg.Peers = append(cfg.Peers, *mpeer)
         } else if strings.Contains(v, "port") {
-            cfg.Port, _ = strconv.Atoi(strings.Split(v, " ")[1])
+            port := strings.Split(v, " ")[1]
+            cfg.Port, _ = strconv.Atoi(port)
+            peer.SetAddr(cfg.MyIP + ":" + port)
         } else if strings.Contains(v, "secret") {
             var key big.Int
             _, suc := key.SetString(strings.Split(v, " ")[1], 10)
             if suc {
-                cfg.Secret = key
+                cfg.SecretKey = key
             } else {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue
             }
-
+        } else if strings.Contains(v, "public") {
+            var key big.Int
+            _, suc := key.SetString(strings.Split(v, " ")[1], 10)
+            if suc {
+                cfg.PublicKey = key
+            } else {
+                fmt.Printf("Key not formatted correctly on line %d\n", i)
+                continue
+            }
         }
-
     }
     return &cfg
 }
 
+// courtesy of jniltonho
+func getMyIP() string {
+    addrs, or := net.InterfaceAddrs()
+    e.Rr(or, true)
+
+    for _, a := range addrs {
+        if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+            if ipnet.IP.To4() != nil {
+                return ipnet.IP.String()
+            }
+        }
+    }
+    return ""
+}
