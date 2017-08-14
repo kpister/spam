@@ -1,7 +1,10 @@
 # spam
+_Always Check the corresponding branch for details on actual updates_
+
+Many of the following tasks are not yet implemented on Master branch and can only be used on their sub-branch
 
 # Upcoming tasks and how to contribute
-* - [ ] Console
+* - [x] Console
   * - [x] Implement simple file io console
   * - [ ] Brainstorm other ideas which might be better
   
@@ -24,7 +27,7 @@
   * - [ ] It would be nice to shrink the public private key values. There is a lot of documentation on this
 
 * - [ ] Implement SCP
-  * - [ ] Reread SCP paper
+  * - [x] Reread SCP paper
   * - [ ] Read Stellar's SCP implementation
   * - [ ] Draw out how we will do it in spam (including classes, file directory structure, etc)
   * - [ ] Start writing code
