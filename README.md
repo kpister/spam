@@ -1,5 +1,5 @@
 # spam
-_Always Check the corresponding branch for details on actual updates_
+_Always check the corresponding branch for details on actual updates_
 
 Many of the following tasks are not yet implemented on Master branch and can only be used on their sub-branch
 
