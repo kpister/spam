@@ -36,13 +36,14 @@ Many of the following tasks are not yet implemented on Master branch and can onl
 
 install go: https://golang.org/dl
 
-`mkdir -p ~/go/src && cd ~/go/src && export GOPATH=$(~/go)`
+```
+mkdir -p ~/go/src && cd ~/go/src && export GOPATH=$(~/go)
+go get -d github.com/kpister/spam
+cd github.com/kpister/spam
+export $PATH=$PATH:$GOPATH/bin
+```
 
-`go get -d github.com/kpister/spam`
-
-`cd github.com/kpister/spam`
-
-`export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam from anywhere
+Compile and install with `go install`. You can now run spam from anywhere
 
 edit spam_core.cfg with the IPs and public keys of your peers. These will be the ones spam connects to by default
 
