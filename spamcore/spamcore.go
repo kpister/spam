@@ -24,10 +24,11 @@ func handler(conn net.Conn, cfg *parsecfg.Cfg) {
     reader := bufio.NewReader(conn)
     remoteAddr := conn.RemoteAddr().String()
     var p peer.Peer
+    fmt.Println(conn.LocalAddr())
 
     for {
         message, or := reader.ReadString('\n')
-        if p == nil {
+        if p.RemoteAddr == "" {
             for i, v := range cfg.Peers {
                 if v.RemoteAddr == remoteAddr {
                     p = cfg.Peers[i]
@@ -35,7 +36,7 @@ func handler(conn net.Conn, cfg *parsecfg.Cfg) {
             }
         }
         if or != nil && or.Error() == "EOF" {
-            ch <- "Disconnected from " + remoteAddr + "\n"
+            fmt.Println("Disconnected from " + remoteAddr)
             for i, v := range cfg.Peers {
                 if v.RemoteAddr == remoteAddr {
                     cfg.Peers[i].Status = "offline"
@@ -51,7 +52,7 @@ func handler(conn net.Conn, cfg *parsecfg.Cfg) {
             }
 
             // We only acknowledge messages from peers we have authenticated (authrec at least)
-            if p != nil {
+            if p.RemoteAddr != "" {
                 fmt.Print("Message Received from " + p.Name +":" + string(message))
             }
         }
@@ -85,14 +86,14 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
 }
 
 // Start the actual server which spawns off all the little threads
-func server(listener net.Listener, ch chan string, cfg *parsecfg.Cfg) {
+func server(listener net.Listener, cfg *parsecfg.Cfg) {
     for {
         conn, or := listener.Accept()
         defer conn.Close()
         if e.Rr(or, false) {
             continue
         }
-        go handler(conn, ch, cfg)
+        go handler(conn, cfg)
     }
 }
 
