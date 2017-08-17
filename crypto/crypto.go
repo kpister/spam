@@ -34,12 +34,12 @@ func ConvertMessageToInt(m string) *big.Int {
     var total, expon, it, sol, zero, temp big.Int
     total.SetInt64(0)
     bytes := []byte(m)
+    it.SetInt64(1000)
+    zero.SetInt64(0)
 
     for i, v := range bytes {
         expon.SetInt64(int64((len(bytes) - i - 1)))
-        it.SetInt64(1000)
         temp.SetInt64(int64(v))
-        zero.SetInt64(0)
         sol.Exp(&it, &expon, &zero)
         sol.Mul(&sol, &temp)
         total.Add(&total, &sol)
