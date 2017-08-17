@@ -20,12 +20,20 @@ import (
 )
 
 // Here we handle incoming messages
-func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
+func handler(conn net.Conn, cfg *parsecfg.Cfg) {
     reader := bufio.NewReader(conn)
     remoteAddr := conn.RemoteAddr().String()
+    var p peer.Peer
 
     for {
         message, or := reader.ReadString('\n')
+        if p == nil {
+            for i, v := range cfg.Peers {
+                if v.RemoteAddr == remoteAddr {
+                    p = cfg.Peers[i]
+                }
+            }
+        }
         if or != nil && or.Error() == "EOF" {
             ch <- "Disconnected from " + remoteAddr + "\n"
             for i, v := range cfg.Peers {
@@ -43,10 +51,8 @@ func handler(conn net.Conn, ch chan string, cfg *parsecfg.Cfg) {
             }
 
             // We only acknowledge messages from peers we have authenticated (authrec at least)
-            for _, v := range cfg.Peers {
-                if v.RemoteAddr == remoteAddr {
-                    ch <- "Message Received from " + v.Name +":" + string(message)
-                }
+            if p != nil {
+                fmt.Print("Message Received from " + p.Name +":" + string(message))
             }
         }
     }
@@ -75,13 +81,6 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
                 }
             }
         }
-    }
-}
-
-// Just how we print... could be done differently...
-func logger(ch chan string) {
-    for {
-        fmt.Print(<-ch)
     }
 }
 
@@ -192,9 +191,7 @@ func StartServer(logfile string, cfg *parsecfg.Cfg) {
     e.Rr(or, true)
     defer listener.Close()
 
-    ch := make(chan string)
-    go logger(ch)
-    go server(listener, ch, cfg)
+    go server(listener, cfg)
     go send(cfg)
     go handleconsole(logfile, cfg)
     for {}
