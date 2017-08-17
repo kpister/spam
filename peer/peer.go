@@ -17,7 +17,6 @@ import (
  * authrec: we received a handshake (we know who they are)
  * authenticated: we have sent and received handshakes
  *
- * TODO This should be an ENUM
  */
 
 type Peer struct {

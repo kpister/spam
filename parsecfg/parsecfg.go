@@ -31,7 +31,6 @@ func ParseCfg(filename string, testing bool) *Cfg {
     pieces := strings.Split(contents, "\n")
 
     // Right now this is always true. We would change to false for non-localhost
-    // TODO make this a parse flag?
     if !testing {
         cfg.MyIP = getMyIP()
     } else {
