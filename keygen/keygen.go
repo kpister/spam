@@ -14,7 +14,7 @@ import (
 // This is run with spam -gen-keypair
 func GenKeys() {
     reader := rand.Reader
-    bitsize := 2048
+    bitsize := 2048 // If you change this, change the value of e in crypto/crypto.go
 
     key, or := rsa.GenerateKey(reader, bitsize)
     e.Rr(or, true)

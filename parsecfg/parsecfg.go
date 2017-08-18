@@ -14,14 +14,14 @@ import (
 )
 
 type Cfg struct {
-    Peers []peer.Peer
+    Peers []peer.Peer // TODO should this be a list of Peer pointers?
     Port int
     SecretKey big.Int
     PublicKey big.Int
     MyIP string
 }
 
-func ParseCfg(filename string, testing bool) *Cfg {
+func ParseCfg(filename string, localhost bool) *Cfg {
     cfg := Cfg{}
 
     bytecontents, or := ioutil.ReadFile(filename)
@@ -31,7 +31,7 @@ func ParseCfg(filename string, testing bool) *Cfg {
     pieces := strings.Split(contents, "\n")
 
     // Right now this is always true. We would change to false for non-localhost
-    if !testing {
+    if !localhost {
         cfg.MyIP = getMyIP()
     } else {
         cfg.MyIP = "127.0.0.1"
@@ -40,17 +40,16 @@ func ParseCfg(filename string, testing bool) *Cfg {
     // Handle the file contents
     readpeers := false
     for i, v := range pieces {
-        if len(v) > 0 && v[0] == byte('#') { // Comments
+        if len(v) == 0 || v[0] == byte('#') { // Comments
             continue
-        }
-        if v == "peers" { // Create peer list
+        } else if v == "peers" { // Create peer list
             readpeers = true
         } else if v == "end" {
             readpeers = false
         } else if readpeers {
             ppieces := strings.Split(v, " ")
             if len(ppieces) != 3 {
-                fmt.Println("Skipping peer: not formatted correctly: ip name public_key")
+                fmt.Print("Skipping peer: not formatted correctly: ip name public_key. Line: %d\n", i)
                 continue
             }
             mpeer := peer.MakePeer(ppieces[0], ppieces[1], ppieces[2])
@@ -77,6 +76,8 @@ func ParseCfg(filename string, testing bool) *Cfg {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue
             }
+        } else {
+            fmt.Printf("Command not understood. Line: %d\n", i)
         }
     }
     return &cfg

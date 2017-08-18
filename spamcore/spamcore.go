@@ -20,11 +20,9 @@ import (
 )
 
 // Here we handle incoming messages
-func handler(conn net.Conn, cfg *parsecfg.Cfg) {
-    reader := bufio.NewReader(conn)
+func handler(conn net.Conn, cfg *parsecfg.Cfg, reader *bufio.Reader) {
     remoteAddr := conn.RemoteAddr().String()
     var p peer.Peer
-    fmt.Println(conn.LocalAddr())
 
     for {
         message, or := reader.ReadString('\n')
@@ -44,17 +42,14 @@ func handler(conn net.Conn, cfg *parsecfg.Cfg) {
                 }
             }
             break // This is when they close their node
-        } else if !e.Rr(or, true) {
+        } else if !e.Rr(or, false) {
             // output message received
-            if strings.Contains(string(message), "Handshake:") {
-                pieces := strings.Split(string(message), ":")
-                go handleshake(pieces[1], remoteAddr, cfg) // Handle handshake
-            }
-
             // We only acknowledge messages from peers we have authenticated (authrec at least)
             if p.RemoteAddr != "" {
                 fmt.Print("Message Received from " + p.Name +":" + string(message))
             }
+        } else {
+            break
         }
     }
     conn.Close()
@@ -93,7 +88,13 @@ func server(listener net.Listener, cfg *parsecfg.Cfg) {
         if e.Rr(or, false) {
             continue
         }
-        go handler(conn, cfg)
+        reader := bufio.NewReader(conn)
+        message, or := reader.ReadString('\n')
+        if e.Rr(or, false){
+            continue
+        }
+        go handleshake(strings.Split(string(message), ":")[1], conn.RemoteAddr().String(), cfg) // Handle handshake
+        go handler(conn, cfg, reader)
     }
 }
 

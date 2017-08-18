@@ -15,6 +15,7 @@ import (
 // An async function to handle ^C input. This way we can cancel any import stuff
 // TODO figure out what we actually need to close/delete
 func handleexit(exit chan os.Signal) {
+    signal.Notify(exit, os.Interrupt)
     for range exit {
         os.Remove(".log")
         // Handle exit status
@@ -26,9 +27,8 @@ func handleexit(exit chan os.Signal) {
 func main(){
 
     // used for exit call
-    exitchannel := make(chan os.Signal, 1)
-    signal.Notify(exitchannel, os.Interrupt)
-    go handleexit(exitchannel)
+    exit := make(chan os.Signal, 1)
+    go handleexit(exit)
 
     // default values, can be changed with flags
     configfile := "spam_core.cfg"
@@ -46,7 +46,7 @@ func main(){
                 skip = true
             } else {
                 fmt.Println("You failed to run this.")
-                os.Exit(0)
+                return
             }
         } else if v == "-c" {
             if len(os.Args) > i + 1 {
@@ -75,5 +75,6 @@ func main(){
     cfg := parsecfg.ParseCfg(configfile, true)
 
     // Start app
-    spamcore.StartServer(logfile, cfg)
+    go spamcore.StartServer(logfile, cfg)
+    for { }
 }

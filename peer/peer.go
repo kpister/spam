@@ -38,12 +38,11 @@ func SetAddr(addr string) {
 // Used when first created a peer (through console or through parsecfg)
 func MakePeer(addr, name string, public string) *Peer {
     var key big.Int
-    pub, suc := key.SetString(public, 10)
-    conn, or := net.Dial("tcp", addr)
-    stop := e.Rr(or, false)
     m := maddr // TODO: Set a proper message here
+    pub, success := key.SetString(public, 10)
+    conn, or := net.Dial("tcp", addr)
 
-    if !stop && suc {
+    if !e.Rr(or, false) && success {
         handshake(conn, pub, m)
         fmt.Println("Successfully connected to peer: " + conn.RemoteAddr().String())
         return &Peer{conn, name, "authsent", addr, pub, m, ""}
@@ -74,8 +73,8 @@ func Connect(peer *Peer) {
 // Send the first shake
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
-    kd := crypto.ConvertMessageToInt(m)
-    message := (crypto.Encrypt(kd, modulus)).String()
+    intmessage := crypto.ConvertMessageToInt(m)
+    message := (crypto.Encrypt(intmessage, modulus)).String()
     fmt.Fprintf(conn, "Handshake:" + message + "\n")
 }
 

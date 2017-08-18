@@ -73,6 +73,7 @@ func Start(logfile string) {
             continue
         }
 
+        // TODO figure out correct permissions
         or = ioutil.WriteFile(logfile, []byte(filecmd), 0770)
         e.Rr(or, false)
 
@@ -81,6 +82,9 @@ func Start(logfile string) {
 
         // Every command is a single response. We make up for this with ?
         line, or := ioutil.ReadFile(logfile)
+        if e.Rr(or, true) {
+            fmt.Println("The log file was deleted unexpectedly")
+        }
         output := strings.Replace(string(line), "?", "\n", -1)
         fmt.Print(output)
 

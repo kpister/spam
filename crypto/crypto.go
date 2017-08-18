@@ -10,6 +10,8 @@ var e big.Int
 
 /* provides basic encryption and decryption
  */
+
+// This is the public key exponent. It is shared among all keys. If we use a different bit value for keygen, this must change
 func SetE() {
     e.SetUint64(65537)
 }
@@ -17,15 +19,15 @@ func SetE() {
 func Encrypt(m, n *big.Int) *big.Int {
     // EncryptedMessage = Message ^ PublicExponent mod (peer's) PublicModulus
     var c big.Int
-    ret := c.Exp(m, &e, n)
-    return ret
+    c.Exp(m, &e, n)
+    return &c
 }
 
 func Decrypt(c, d, n *big.Int) *big.Int{
     // DecryptedMessage = EncryptedMessage ^ (your) SecretKey mod (your) PublicModulus
     var m big.Int
-    ret := m.Exp(c, d, n)
-    return ret
+    m.Exp(c, d, n)
+    return &m
 }
 
 func ConvertMessageToInt(m string) *big.Int {
