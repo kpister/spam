@@ -4,6 +4,10 @@ package crypto
 import (
     "strconv"
     "math/big"
+	"crypto"
+	"crypto/rsa"
+	"crypto/sha512"
+	"crypto/rand"
 )
 
 var e big.Int
@@ -15,6 +19,7 @@ var e big.Int
 func SetE() {
     e.SetUint64(65537)
 }
+
 
 func Encrypt(m, n *big.Int) *big.Int {
     // EncryptedMessage = Message ^ PublicExponent mod (peer's) PublicModulus
@@ -28,6 +33,23 @@ func Decrypt(c, d, n *big.Int) *big.Int{
     var m big.Int
     m.Exp(c, d, n)
     return &m
+}
+
+func Sign(privkey *big.Int, m string) ([]byte, error) {
+	hashed := sha512.Sum512([]byte(m))
+	priv := new(rsa.PrivateKey)  
+	priv.N = privkey
+	return rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA512, hashed[:])
+}
+
+func Verify(pubKey *big.Int, m string) bool{
+	/*
+	err = rsa.VerifyPKCS1v15(&privateKey.PublicKey, crypto.SHA512, digest, signature)
+	if err == nil {
+		return true
+	} 
+	*/
+	return false
 }
 
 func ConvertMessageToInt(m string) *big.Int {

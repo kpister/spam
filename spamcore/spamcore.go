@@ -65,7 +65,7 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     if suc {
         decrypted := crypto.Decrypt(key, &(cfg.SecretKey), &(cfg.PublicKey))
         message := crypto.ConvertMessageFromInt(decrypted)
-
+		// TODO verify signature of message
         for i, v := range cfg.Peers {
             if message == v.Addr {
                 fmt.Println("Decrypted message: " + message + " Peer addr: " + v.Addr)
