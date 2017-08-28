@@ -20,7 +20,7 @@ func SetE() {
     e.SetUint64(65537)
 }
 
-
+// TODO: concatenate message + hash
 func Encrypt(m, n *big.Int) *big.Int {
     // EncryptedMessage = Message ^ PublicExponent mod (peer's) PublicModulus
     var c big.Int
@@ -28,6 +28,7 @@ func Encrypt(m, n *big.Int) *big.Int {
     return &c
 }
 
+// TODO: split message from hash and return both
 func Decrypt(c, d, n *big.Int) *big.Int{
     // DecryptedMessage = EncryptedMessage ^ (your) SecretKey mod (your) PublicModulus
     var m big.Int
@@ -35,20 +36,24 @@ func Decrypt(c, d, n *big.Int) *big.Int{
     return &m
 }
 
+// sign then encrypt
 func Sign(privkey *big.Int, m string) ([]byte, error) {
+	// Get message hash
 	hashed := sha512.Sum512([]byte(m))
+	// Create rsa.PrivateKey object 
 	priv := new(rsa.PrivateKey)  
 	priv.N = privkey
+
 	return rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA512, hashed[:])
 }
 
-func Verify(pubKey *big.Int, m string) bool{
-	/*
-	err = rsa.VerifyPKCS1v15(&privateKey.PublicKey, crypto.SHA512, digest, signature)
+func Verify(pubKey *big.Int, digest []byte , m string , s []byte) bool{
+	pub := new(rsa.PublicKey)
+	pub.N = pubKey
+	err := rsa.VerifyPKCS1v15(pub, crypto.SHA512, digest, s)
 	if err == nil {
 		return true
 	} 
-	*/
 	return false
 }
 
