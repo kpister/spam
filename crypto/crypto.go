@@ -6,7 +6,7 @@ import (
     "math/big"
 	"crypto"
 	"crypto/rsa"
-	"crypto/sha512"
+	"crypto/sha256"
 	"crypto/rand"
 )
 
@@ -39,22 +39,30 @@ func Decrypt(c, d, n *big.Int) *big.Int{
 // sign then encrypt
 func Sign(privkey *big.Int, m string) ([]byte, error) {
 	// Get message hash
-	hashed := sha512.Sum512([]byte(m))
+	digest := hash(m)
 	// Create rsa.PrivateKey object 
 	priv := new(rsa.PrivateKey)  
 	priv.N = privkey
 
-	return rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA512, hashed[:])
+	return rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, digest[:])
 }
 
-func Verify(pubKey *big.Int, digest []byte , m string , s []byte) bool{
+func Verify(pubKey *big.Int, m string , s []byte) bool{
 	pub := new(rsa.PublicKey)
 	pub.N = pubKey
-	err := rsa.VerifyPKCS1v15(pub, crypto.SHA512, digest, s)
+	digest := hash(m)	
+	err := rsa.VerifyPKCS1v15(pub, crypto.SHA256, digest, s)
 	if err == nil {
 		return true
 	} 
 	return false
+}
+
+func hash(m string) []byte {
+	h := sha256.New()
+	h.Write([]byte(m))
+	digest := h.Sum(nil)
+	return digest
 }
 
 func ConvertMessageToInt(m string) *big.Int {

@@ -61,18 +61,21 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     var k big.Int
     key, suc := k.SetString(strings.TrimSpace(keystring), 10)
     fmt.Println("Trying to handshake with ", remoteaddr, "...")
-
     if suc {
         decrypted := crypto.Decrypt(key, &(cfg.SecretKey), &(cfg.PublicKey))
         message := crypto.ConvertMessageFromInt(decrypted)
-		// TODO verify signature of message
-        for i, v := range cfg.Peers {
+		// TODO Obtain signature from payload
+		if ! crypto.Verify(k, message, signature) {
+			// TODO: throw exception or return failure
+			fmt.Println("failed to verify signature.")
+		}
+		for i, v := range cfg.Peers {
             if message == v.Addr {
                 fmt.Println("Decrypted message: " + message + " Peer addr: " + v.Addr)
                 cfg.Peers[i].RemoteAddr = remoteaddr
                 if v.Status == "authsent" {
                     cfg.Peers[i].Status = "authenticated"
-                } else {
+               } else {
                     cfg.Peers[i].Status = "authrec"
                 }
             }
