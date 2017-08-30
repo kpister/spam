@@ -42,7 +42,7 @@ install go: https://golang.org/dl
 
 `cd github.com/kpister/spam`
 
-`export $PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam from anywhere
+`export PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam from anywhere
 
 edit spam_core.cfg with the IPs and public keys of your peers. These will be the ones spam connects to by default
 
