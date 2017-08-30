@@ -36,7 +36,7 @@ Many of the following tasks are not yet implemented on Master branch and can onl
 
 install go: https://golang.org/dl
 
-`mkdir -p ~/go/src && cd ~/go/src && export GOPATH=$(~/go)`
+`mkdir -p ~/go/src && cd ~/go/src && export GOPATH=~/go`
 
 `go get -d github.com/kpister/spam`
 
