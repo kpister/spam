@@ -2,9 +2,11 @@
 package peer
 
 import (
+    "bytes"
+	"fmt"
     "net"
-    "fmt"
-    "math/big"
+	
+	"math/big"
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/crypto"
@@ -30,9 +32,14 @@ type Peer struct {
 }
 
 var maddr string
+var mprivKey big.Int
 
 func SetAddr(addr string) {
     maddr = addr
+}
+
+func SetPrivKey(privKey big.Int) {
+	mprivKey = privKey
 }
 
 // Used when first created a peer (through console or through parsecfg)
@@ -73,8 +80,18 @@ func Connect(peer *Peer) {
 // Send the first shake
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
-    intmessage := crypto.ConvertMessageToInt(m)
-    message := (crypto.Encrypt(intmessage, modulus)).String()
+	signature, err:= crypto.Sign(&mprivKey, m)
+	if err != nil {
+    	fmt.Println("handshake failed.")
+		return
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString(m)
+	buffer.Write(signature)
+	signedmessage := buffer.String()
+	intmessage := crypto.ConvertMessageToInt(signedmessage)
+    // TODO sign message before encryption
+	message := (crypto.Encrypt(intmessage, modulus)).String()
     fmt.Fprintf(conn, "Handshake:" + message + "\n")
 }
 

@@ -63,6 +63,7 @@ func ParseCfg(filename string, localhost bool) *Cfg {
             _, suc := key.SetString(strings.Split(v, " ")[1], 10)
             if suc {
                 cfg.SecretKey = key
+				peer.SetPrivKey(key)
             } else {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue
