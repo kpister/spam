@@ -63,7 +63,9 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
     fmt.Println("Trying to handshake with ", remoteaddr, "...")
     if suc {
         decrypted := crypto.Decrypt(key, &(cfg.SecretKey), &(cfg.PublicKey))
-        payload := crypto.ConvertMessageFromInt(decrypted)
+		message := crypto.ConvertMessageFromInt(decrypted)
+		/*
+		payload := crypto.ConvertMessageFromInt(decrypted)
 		// TODO Obtain signature from payload
 		message := payload[0:len(payload)-256]
 		signature := []byte(payload[len(payload)-256:])
@@ -72,6 +74,7 @@ func handleshake(keystring, remoteaddr string, cfg *parsecfg.Cfg){
 			// TODO: throw exception or return failure
 			fmt.Println("failed to verify signature.")
 		}
+		*/
 		for i, v := range cfg.Peers {
             if message == v.Addr {
                 fmt.Println("Decrypted message: " + message + " Peer addr: " + v.Addr)

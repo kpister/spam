@@ -2,12 +2,13 @@
 package crypto
 
 import (
-    "strconv"
-    "math/big"
+	"fmt"
+	"math/big"
 	"crypto"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/rand"
+    "strconv"
 )
 
 var e big.Int
@@ -37,14 +38,24 @@ func Decrypt(c, d, n *big.Int) *big.Int{
 }
 
 // sign then encrypt
-func Sign(privkey *big.Int, m string) ([]byte, error) {
+func Sign(privkey *big.Int, d *big.Int, m string) ([]byte, error) {
+	fmt.Println("in crypto.Sign")
 	// Get message hash
 	digest := hash(m)
+	fmt.Println("Got message digest")
 	// Create rsa.PrivateKey object 
 	priv := new(rsa.PrivateKey)  
+	fmt.Println("created new rsa.PrivateKey")
 	priv.N = privkey
-
-	return rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, digest[:])
+	priv.D = d
+	fmt.Println("Assigned rsa.PrivateKey")
+	fmt.Println(rand.Reader, "\n", priv, "\n", crypto.SHA256, "\n", digest[:])
+	fmt.Println("Call SignPKCS1v15")
+	signature, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, digest[:])
+	fmt.Println(signature)
+	fmt.Println(err)
+	fmt.Println("Done signing")
+	return signature, err
 }
 
 func Verify(pubKey *big.Int, m string , s []byte) bool{

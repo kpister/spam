@@ -10,6 +10,7 @@ import (
 
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/crypto"
+    //"github.com/kpister/spam/parsecfg"
 )
 
 /* A peer has the following statuses
@@ -33,6 +34,7 @@ type Peer struct {
 
 var maddr string
 var mprivKey big.Int
+var mD big.Int
 
 func SetAddr(addr string) {
     maddr = addr
@@ -40,6 +42,10 @@ func SetAddr(addr string) {
 
 func SetPrivKey(privKey big.Int) {
 	mprivKey = privKey
+}
+
+func SetD(d big.Int) {
+	mD = d
 }
 
 // Used when first created a peer (through console or through parsecfg)
@@ -80,17 +86,23 @@ func Connect(peer *Peer) {
 // Send the first shake
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
-	signature, err:= crypto.Sign(&mprivKey, m)
+	
+	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  m)
+	fmt.Println("signature")
+	fmt.Println(signature)
 	if err != nil {
     	fmt.Println("handshake failed.")
+		fmt.Println(signature)
 		return
 	}
+	
 	var buffer bytes.Buffer
 	buffer.WriteString(m)
-	buffer.Write(signature)
-	signedmessage := buffer.String()
-	intmessage := crypto.ConvertMessageToInt(signedmessage)
-    // TODO sign message before encryption
+	//buffer.Write(signature)
+	//signedmessage := buffer.String()
+	//intmessage := crypto.ConvertMessageToInt(signedmessage)
+	intmessage := crypto.ConvertMessageToInt(m)
+	// TODO sign message before encryption
 	message := (crypto.Encrypt(intmessage, modulus)).String()
     fmt.Fprintf(conn, "Handshake:" + message + "\n")
 }
