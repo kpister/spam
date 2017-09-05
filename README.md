@@ -38,9 +38,9 @@ install go: https://golang.org/dl
 
 ```
 mkdir -p ~/go/src && cd ~/go/src && export GOPATH=$(~/go)
+export $PATH=$PATH:$GOPATH/bin
 go get -d github.com/kpister/spam
 cd github.com/kpister/spam
-export $PATH=$PATH:$GOPATH/bin
 ```
 
 Compile and install with `go install`. You can now run spam from anywhere
