@@ -13,6 +13,7 @@ import (
     "github.com/kpister/spam/peer"
 )
 
+// TODO: Use rsa.PrivateKey and rsa.PublicKey structs
 type Cfg struct {
     Peers []peer.Peer // TODO should this be a list of Peer pointers?
     Port int
@@ -21,6 +22,7 @@ type Cfg struct {
     MyIP string
 }
 
+// TODO: Parse primes for private key
 func ParseCfg(filename string, localhost bool) *Cfg {
     cfg := Cfg{}
 

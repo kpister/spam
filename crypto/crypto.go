@@ -38,7 +38,7 @@ func Decrypt(c, d, n *big.Int) *big.Int{
 }
 
 // sign then encrypt
-func Sign(privkey *big.Int, d *big.Int, m string) ([]byte, error) {
+func Sign(privkey *big.Int, d *big.Int, modulus *big.Int, m string) ([]byte, error) {
 	fmt.Println("in crypto.Sign")
 	// Get message hash
 	digest := hash(m)
@@ -46,10 +46,10 @@ func Sign(privkey *big.Int, d *big.Int, m string) ([]byte, error) {
 	// Create rsa.PrivateKey object 
 	priv := new(rsa.PrivateKey)  
 	fmt.Println("created new rsa.PrivateKey")
-	priv.N = privkey
+	priv.N = modulus
 	priv.D = d
 	fmt.Println("Assigned rsa.PrivateKey")
-	fmt.Println(rand.Reader, "\n", priv, "\n", crypto.SHA256, "\n", digest[:])
+	fmt.Println(rand.Reader, "\n\n", priv, "\n\n", crypto.SHA256, "\n\n", digest[:])
 	fmt.Println("Call SignPKCS1v15")
 	signature, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, digest[:])
 	fmt.Println(signature)

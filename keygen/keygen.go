@@ -25,4 +25,7 @@ func GenKeys() {
     fmt.Println("===========Private Key=========")
     fmt.Println(key.D)
     fmt.Println("===============================")
+	fmt.Println("===========Prime Factors=======")
+	fmt.Println(key.Primes)
+	fmt.Println("===============================")
 }

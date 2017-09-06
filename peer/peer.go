@@ -87,11 +87,11 @@ func Connect(peer *Peer) {
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
 	
-	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  m)
+	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  modulus, m)
 	fmt.Println("signature")
 	fmt.Println(signature)
 	if err != nil {
-    	fmt.Println("handshake failed.")
+    	fmt.Println("Signing failed.")
 		fmt.Println(signature)
 		return
 	}
