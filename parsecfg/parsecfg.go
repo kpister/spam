@@ -19,7 +19,9 @@ type Cfg struct {
     Port int
     SecretKey big.Int
     PublicKey big.Int
-    MyIP string
+    Prime1 big.Int
+	Prime2 big.Int
+	MyIP string
 }
 
 // TODO: Parse primes for private key
@@ -79,7 +81,24 @@ func ParseCfg(filename string, localhost bool) *Cfg {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue
             }
-        } else {
+        } else if strings.Contains(v, "primefactors") {
+			var prime1 big.Int
+			var prime2 big.Int
+			_, suc := prime1.SetString(strings.Split(v, " ")[1], 10)
+			if suc {
+				cfg.Prime1 = prime1
+				peer.SetPrime1(prime1)
+			} else {
+				fmt.Printf("prime not formatted correctly on line %d\n", i)
+			}
+			_, suc = prime2.SetString(strings.Split(v, " ")[2], 10)
+			if suc {
+				cfg.Prime2 = prime2
+				peer.SetPrime2(prime2)
+			} else {
+				fmt.Printf("prime not formatted correctly on line %d\n", i)
+			}
+		} else {
             fmt.Printf("Command not understood. Line: %d\n", i)
         }
     }

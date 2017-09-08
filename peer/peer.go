@@ -35,6 +35,8 @@ type Peer struct {
 var maddr string
 var mprivKey big.Int
 var mD big.Int
+var mPrime1 big.Int
+var mPrime2 big.Int
 
 func SetAddr(addr string) {
     maddr = addr
@@ -46,6 +48,14 @@ func SetPrivKey(privKey big.Int) {
 
 func SetD(d big.Int) {
 	mD = d
+}
+
+func SetPrime1(p big.Int) {
+	mPrime1 = p
+}
+
+func SetPrime2(p big.Int) {
+	mPrime2 = p
 }
 
 // Used when first created a peer (through console or through parsecfg)
@@ -87,7 +97,7 @@ func Connect(peer *Peer) {
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
 	
-	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  modulus, m)
+	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  modulus, &mPrime1, &mPrime2, m)
 	fmt.Println("signature")
 	fmt.Println(signature)
 	if err != nil {
