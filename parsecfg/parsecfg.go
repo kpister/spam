@@ -8,7 +8,6 @@ import (
     "strconv"
     "math/big"
     "io/ioutil"
-
     "github.com/kpister/spam/e"
     "github.com/kpister/spam/peer"
 )
@@ -77,6 +76,7 @@ func ParseCfg(filename string, localhost bool) *Cfg {
             _, suc := key.SetString(strings.Split(v, " ")[1], 10)
             if suc {
                 cfg.PublicKey = key
+				peer.SetPubKey(key)
             } else {
                 fmt.Printf("Key not formatted correctly on line %d\n", i)
                 continue

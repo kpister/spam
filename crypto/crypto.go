@@ -8,7 +8,8 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/rand"
-    "strconv"
+    "io"
+	"strconv"
 )
 
 var e big.Int
@@ -38,7 +39,7 @@ func Decrypt(c, d, n *big.Int) *big.Int{
 }
 
 // sign then encrypt
-func Sign(privkey *big.Int, d *big.Int, modulus *big.Int, prime1 *big.Int, prime2 *big.Int,  m string) ([]byte, error) {
+func Sign(d *big.Int, modulus *big.Int, prime1 *big.Int, prime2 *big.Int,  m string) ([]byte, error) {
 	fmt.Println("in crypto.Sign")
 	// Get message hash
 	digest := hash(m)
@@ -46,17 +47,22 @@ func Sign(privkey *big.Int, d *big.Int, modulus *big.Int, prime1 *big.Int, prime
 	// Create rsa.PrivateKey object 
 	priv := new(rsa.PrivateKey)  
 	fmt.Println("created new rsa.PrivateKey")
-	priv.N = modulus
+	priv.PublicKey.N = modulus
+	priv.PublicKey.E = int(e.Int64())
 	priv.D = d
 	priv.Primes = append(priv.Primes, prime1)
 	priv.Primes = append(priv.Primes, prime2)
+	priv.Precompute()
+	var h crypto.Hash
 	fmt.Println("Assigned rsa.PrivateKey")
-	fmt.Println(rand.Reader, "\n\n", priv, "\n\n", crypto.SHA256, "\n\n", digest[:])
+	fmt.Println(priv, "\n\n", crypto.SHA256, "\n\n", digest[:])
 	fmt.Println("Call SignPKCS1v15")
-	signature, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, digest[:])
-	fmt.Println(signature)
-	fmt.Println(err)
-	fmt.Println("Done signing")
+	signature, err := rsa.SignPKCS1v15(rand.Reader, priv, h, digest)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Done signing")
+	}
 	return signature, err
 }
 
@@ -72,10 +78,10 @@ func Verify(pubKey *big.Int, m string , s []byte) bool{
 }
 
 func hash(m string) []byte {
-	h := sha256.New()
-	h.Write([]byte(m))
-	digest := h.Sum(nil)
-	return digest
+	hash := sha256.New()
+	io.WriteString(hash, string([]byte(m)))
+	hashed := hash.Sum(nil)
+	return hashed
 }
 
 func ConvertMessageToInt(m string) *big.Int {

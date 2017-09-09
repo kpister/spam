@@ -34,7 +34,7 @@ type Peer struct {
 
 var maddr string
 var mprivKey big.Int
-var mD big.Int
+var mpubKey big.Int
 var mPrime1 big.Int
 var mPrime2 big.Int
 
@@ -42,12 +42,12 @@ func SetAddr(addr string) {
     maddr = addr
 }
 
-func SetPrivKey(privKey big.Int) {
-	mprivKey = privKey
+func SetPrivKey(key big.Int) {
+	mprivKey = key
 }
 
-func SetD(d big.Int) {
-	mD = d
+func SetPubKey(key big.Int) {
+	mpubKey = key
 }
 
 func SetPrime1(p big.Int) {
@@ -97,15 +97,13 @@ func Connect(peer *Peer) {
 func handshake(conn net.Conn, modulus *big.Int, m string) {
     // When we dial a peer, send an encrypted (signed) message
 	
-	signature, err:= crypto.Sign(&mprivKey, &mprivKey,  modulus, &mPrime1, &mPrime2, m)
-	fmt.Println("signature")
-	fmt.Println(signature)
+	signature, err:= crypto.Sign(&mprivKey, &mpubKey, &mPrime1, &mPrime2, m)
 	if err != nil {
     	fmt.Println("Signing failed.")
+	} else {
 		fmt.Println(signature)
-		return
-	}
-	
+		fmt.Println("Message signed successfully")
+	}	
 	var buffer bytes.Buffer
 	buffer.WriteString(m)
 	//buffer.Write(signature)
