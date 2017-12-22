@@ -3,7 +3,7 @@ _Always check the corresponding branch for details on actual updates_
 
 Many of the following tasks are not yet implemented on Master branch and can only be used on their sub-branch
 
-# Upcoming tasks and how to contribute
+# TODO
 * - [x] Console
   * - [x] Implement simple file io console
   * - [ ] Brainstorm other ideas which might be better
@@ -76,3 +76,6 @@ Some example commands include:
 If you change the name of the cfg file when you run your node, the console will only work if you do the following:
 
 `spam -c .log_newCfgFileName.cfg`
+
+# Tags
+go, plsyssec
