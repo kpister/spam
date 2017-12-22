@@ -77,5 +77,5 @@ If you change the name of the cfg file when you run your node, the console will 
 
 `spam -c .log_newCfgFileName.cfg`
 
-# Tags
+#### Tags
 go, plsyssec
