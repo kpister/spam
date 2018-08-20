@@ -1,9 +1,9 @@
 # spam
-_Always Check the corresponding branch for details on actual updates_
+_Always check the corresponding branch for details on actual updates_
 
 Many of the following tasks are not yet implemented on Master branch and can only be used on their sub-branch
 
-# Upcoming tasks and how to contribute
+# TODO
 * - [x] Console
   * - [x] Implement simple file io console
   * - [ ] Brainstorm other ideas which might be better
@@ -44,6 +44,7 @@ install go: https://golang.org/dl
 
 `export PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam from anywhere
 
+
 edit spam_core.cfg with the IPs and public keys of your peers. These will be the ones spam connects to by default
 
 `spam` will default to use spam_core.cfg and .log
@@ -75,3 +76,6 @@ Some example commands include:
 If you change the name of the cfg file when you run your node, the console will only work if you do the following:
 
 `spam -c .log_newCfgFileName.cfg`
+
+#### Tags
+go, plsyssec
