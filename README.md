@@ -36,14 +36,14 @@ Many of the following tasks are not yet implemented on Master branch and can onl
 
 install go: https://golang.org/dl
 
-```
-mkdir -p ~/go/src && cd ~/go/src && export GOPATH=$(~/go)
-export $PATH=$PATH:$GOPATH/bin
-go get -d github.com/kpister/spam
-cd github.com/kpister/spam
-```
+`mkdir -p ~/go/src && cd ~/go/src && export GOPATH=~/go`
 
-Compile and install with `go install`. You can now run spam from anywhere
+`go get -d github.com/kpister/spam`
+
+`cd github.com/kpister/spam`
+
+`export PATH=$PATH:$GOPATH/bin` and then `go install`. You can now run spam from anywhere
+
 
 edit spam_core.cfg with the IPs and public keys of your peers. These will be the ones spam connects to by default
 
@@ -51,11 +51,11 @@ edit spam_core.cfg with the IPs and public keys of your peers. These will be the
 
 For a test network to show it is working run the following nodes and cfgs
 
-`spam -i node1.cfg`
+`spam -i cfgs/node1.cfg`
 
-(new tab) `spam -i node2.cfg`
+(new tab) `spam -i cfgs/node2.cfg`
 
-(new tab) `spam -i node3.cfg`
+(new tab) `spam -i cfgs/node3.cfg`
 
 Feel free to close and reconnect each of the nodes.
 
